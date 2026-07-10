@@ -55,7 +55,7 @@
             <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition uppercase tracking-wider text-sm cursor-pointer">Randevu Oluştur</button>
         </form>
 
-        <div id="successCard" class="hidden bg-slate-900/80 border border-emerald-500/30 p-5 rounded-xl text-center space-y-4 animate-fade-in">
+        <div id="successCard" class="hidden bg-slate-900/80 border border-emerald-500/30 p-5 rounded-xl text-center space-y-4">
             <p class="text-emerald-400 font-bold text-md">🎉 Randevunuz Sistemde Hazır!</p>
             <p class="text-xs text-slate-300 px-2 leading-relaxed">Randevunuzun dükkan takvimine kesin olarak işlenmesi için lütfen aşağıdaki butona tıklayarak WhatsApp üzerinden onay mesajı gönderiniz.</p>
             <a id="whatsappBtn" target="_blank" class="block w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition uppercase tracking-wider text-xs shadow-md">
@@ -69,8 +69,8 @@
         const successCard = document.getElementById('successCard');
         const whatsappBtn = document.getElementById('whatsappBtn');
         
-        // Buraya dükkanın kendi telefon numarasını uluslararası formatta (başında sıfır olmadan) yaz usta
-        const DUKKAN_TELEFON = "905XXXXXXXXXX"; 
+        // Sizin numaranız tanımlandı usta:
+        const DUKKAN_TELEFON = "905519611852"; 
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -81,13 +81,10 @@
             const date = document.getElementById('appDate').value.split('-').reverse().join('.');
             const time = document.getElementById('appTime').value;
 
-            // WhatsApp hazır mesaj şablonu oluşturma
             const mesaj = `Merhaba Kaan Usta,%0A%0A🗓️ *Yeni Randevu Onayı*:%0A👤 *Müşteri:* ${name}%0A✂️ *Hizmet:* ${service}%0A💈 *Berber:* ${barber}%0A📅 *Tarih:* ${date}%0A⏰ *Saat:* ${time}%0A%0AOnayınızı rica ederim, iyi çalışmalar!`;
 
-            // WhatsApp linkini bağlama
             whatsappBtn.href = `https://wa.me/${DUKKAN_TELEFON}?text=${mesaj}`;
 
-            // Formu gizle, başarı kartını göster
             form.classList.add('hidden');
             successCard.classList.remove('hidden');
         });
