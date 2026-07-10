@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuaför Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 flex flex-col justify-center items-center">
+
+    <!-- GİZLİ GİRİŞ EKRANI -->
+    <div id="loginScreen" class="w-full max-w-md bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl text-center">
+        <h2 class="text-xl font-bold text-amber-500 uppercase tracking-wider mb-2">Yönetim Girişi</h2>
+        <p class="text-xs text-slate-400 mb-6">Lütfen dükkan gizli kasa şifresini giriniz.</p>
+        <div class="space-y-4">
+            <input type="password" id="pinInput" placeholder="••••" class="w-full text-center bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-2xl tracking-widest text-slate-100 focus:outline-none focus:border-amber-500">
+            <button onclick="checkPin()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl shadow-lg transition uppercase tracking-wider cursor-pointer">Giriş Yap</button>
+        </div>
+        <p id="loginError" class="text-xs text-rose-400 mt-3 hidden">❌ Hatalı Şifre! Yetkiniz yok.</p>
+    </div>
+
+    <!-- GERÇEK YÖNETİM PANELİ (Giriş yapılana kadar gizli) -->
+    <div id="adminPanel" class="w-full max-w-4xl hidden space-y-6">
+        <header class="text-center mb-4">
+            <h1 class="text-2xl font-bold text-amber-500 uppercase tracking-wider">Kaan Usta - Gizli Kasa Paneli</h1>
+            <p class="text-xs text-slate-400 mt-1">Gelir, Gider ve Personel Prim Takibi</p>
+        </header>
+
+        <!-- ÖZET KUTULARI -->
+        <section class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-md">
+                <p class="text-xs text-slate-400 font-medium">Toplam Ciro</p>
+                <p id="totalIncome" class="text-xl font-bold text-emerald-400 mt-1">0 TL</p>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-md">
+                <p class="text-xs text-slate-400 font-medium">Toplam Gider</p>
+                <p id="totalExpense" class="text-xl font-bold text-rose-400 mt-1">0 TL</p>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 text-center shadow-md">
+                <p class="text-xs text-slate-400 font-medium">Net Kâr</p>
+                <p id="netProfit" class="text-xl font-bold text-amber-400 mt-1">0 TL</p>
+            </div>
+        </section>
+
+        <!-- VERİ GİRİŞ FORMLARI -->
+        <section class="grid md:grid-cols-2 gap-4">
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+                <h3 class="text-md font-semibold text-emerald-400 mb-3 border-b border-slate-700 pb-2">➕ Gelir (Kasa Girişi)</h3>
+                <form id="incomeForm" class="space-y-3">
+                    <input type="text" id="incClient" placeholder="Müşteri Adı" required class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <select id="incEmployee" required class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                        <option value="" disabled selected>Hizmeti Veren Personel</option>
+                        <option value="Kaan Usta">Kaan Usta</option>
+                        <option value="Kerem Kalfa">Kerem Kalfa</option>
+                        <option value="Taha Kalfa">Taha Kalfa</option>
+                    </select>
+                    <input type="number" id="incAmount" placeholder="Alınan Ücret (TL)" required class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2 rounded-lg text-sm transition">Kasaya Ekle</button>
+                </form>
+            </div>
+
+            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+                <h3 class="text-md font-semibold text-rose-400 mb-3 border-b border-slate-700 pb-2">➖ Gider (Harcama)</h3>
+                <form id="expenseForm" class="space-y-3">
+                    <input type="text" id="expDesc" placeholder="Harcama Açıklaması" required class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-rose-500">
+                    <input type="number" id="expAmount" placeholder="Ödenen Tutar (TL)" required class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-rose-500">
+                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-slate-950 font-bold py-2 rounded-lg text-sm transition">Gideri İşle</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- PERSONEL PERFORMANS -->
+        <section class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-md font-semibold text-amber-500 mb-3 border-b border-slate-700 pb-2">💈 Personel Güncel Ciro Durumu</h3>
+            <div id="staffStats" class="grid grid-cols-3 gap-2 text-sm text-center"></div>
+        </section>
+
+        <!-- HAREKET GEÇMİŞİ -->
+        <section class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl">
+            <h3 class="text-md font-semibold text-slate-200 mb-3 border-b border-slate-700 pb-2">📋 İşlem Geçmişi</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-slate-400 border-b border-slate-700">
+                            <th class="py-2">Tür</th>
+                            <th class="py-2">Açıklama / Detay</th>
+                            <th class="py-2">Tutar</th>
+                            <th class="py-2 text-center">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionList" class="divide-y divide-slate-700/50"></tbody>
+                </table>
+            </div>
+        </section>
+        
+        <div class="text-center mt-4">
+            <button onclick="logout()" class="text-xs bg-slate-800 border border-slate-700 hover:bg-slate-700 px-4 py-2 rounded-xl text-slate-400 transition">Panelden Çıkış Yap</button>
+        </div>
+    </div>
+
+    <script>
+        const DOĞRU_ŞİFRE = "5252"; 
+
+        function checkPin() {
+            const input = document.getElementById('pinInput').value;
+            if (input === DOĞRU_ŞİFRE) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                updateUI();
+            } else {
+                const err = document.getElementById('loginError');
+                err.classList.remove('hidden');
+                document.getElementById('pinInput').value = "";
+            }
+        }
+
+        function logout() { window.location.reload(); }
+
+        let transactions = JSON.parse(localStorage.getItem('barber_finance')) || [];
+        const incomeForm = document.getElementById('incomeForm');
+        const expenseForm = document.getElementById('expenseForm');
+
+        incomeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const transaction = {
+                id: Date.now(),
+                type: 'income',
+                detail: `${document.getElementById('incClient').value} (${document.getElementById('incEmployee').value})`,
+                staff: document.getElementById('incEmployee').value,
+                amount: parseFloat(document.getElementById('incAmount').value)
+            };
+            transactions.push(transaction);
+            updateUI();
+            incomeForm.reset();
+        });
+
+        expenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const transaction = {
+                id: Date.now(),
+                type: 'expense',
+                detail: document.getElementById('expDesc').value,
+                staff: null,
+                amount: parseFloat(document.getElementById('expAmount').value)
+            };
+            transactions.push(transaction);
+            updateUI();
+            expenseForm.reset();
+        });
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            updateUI();
+        }
+
+        function updateUI() {
+            localStorage.setItem('barber_finance', JSON.stringify(transactions));
+            let totalInc = 0; let totalExp = 0;
+            let staffSales = {'Kaan Usta': 0, 'Kerem Kalfa': 0, 'Taha Kalfa': 0};
+            const list = document.getElementById('transactionList');
+            list.innerHTML = '';
+
+            transactions.forEach(t => {
+                if (t.type === 'income') {
+                    totalInc += t.amount;
+                    if(t.staff) staffSales[t.staff] += t.amount;
+                } else { totalExp += t.amount; }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-700/30 transition";
+                tr.innerHTML = `
+                    <td class="py-2.5 font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">${t.type === 'income' ? 'GELİR' : 'GIDER'}</td>
+                    <td class="py-2.5 text-slate-300">${t.detail}</td>
+                    <td class="py-2.5 font-semibold">${t.amount} TL</td>
+                    <td class="py-2.5 text-center"><button onclick="deleteTransaction(${t.id})" class="text-xs bg-slate-900 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white px-2 py-1 rounded transition">Sil</button></td>
+                `;
+                list.appendChild(tr);
+            });
+
+            document.getElementById('totalIncome').innerText = `${totalInc} TL`;
+            document.getElementById('totalExpense').innerText = `${totalExp} TL`;
+            const net = totalInc - totalExp;
+            const netEl = document.getElementById('netProfit');
+            netEl.innerText = `${net} TL`;
+            if(net >= 0) { netEl.className = "text-xl font-bold text-emerald-400 mt-1"; }
+            else { netEl.className = "text-xl font-bold text-rose-400 mt-1"; }
+
+            const staffStats = document.getElementById('staffStats');
+            staffStats.innerHTML = '';
+            for (const [name, amount] of Object.entries(staffSales)) {
+                staffStats.innerHTML += `
+                    <div class="bg-slate-900/50 p-2.5 rounded-lg border border-slate-700/50">
+                        <p class="font-medium text-slate-300 text-xs">${name}</p>
+                        <p class="text-amber-400 font-bold mt-0.5">${amount} TL</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+          </html>
+  
