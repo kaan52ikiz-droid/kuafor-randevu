@@ -99,7 +99,6 @@
     </div>
 
     <script>
-        // Formspree Entegrasyon Kimliği
         const FORMSPREE_ID = "xwvdgwdz"; 
 
         const form = document.getElementById('appointmentForm');
@@ -112,10 +111,13 @@
         const timeSelect = document.getElementById('appTime');
 
         const fiyatlar = { "Saç Kesimi": "200 TL", "Sakal Tıraşı": "100 TL", "Saç & Sakal Kombin": "280 TL" };
+        
+        // 09:00 - 22:00 Çalışma Saatleri (Son slot 21:30)
         const calismaSaatleri = [
             "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", 
             "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", 
-            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", 
+            "21:00", "21:30"
         ];
 
         dateInput.min = new Date().toISOString().split('T')[0];
@@ -145,6 +147,23 @@
                 return;
             }
 
+            const gunIndeksi = new Date(secilenTarih).getDay(); 
+            if(gunIndeksi === 0) {
+                alert("Dükkanımız Pazar günleri kapalıdır.");
+                dateInput.value = "";
+                timeSelect.disabled = true;
+                return;
+            }
+
+            // Gerçek Zaman Kontrolü (Bugünün geçmiş saatlerini engellemek için)
+            const simdi = new Date();
+            const yyyy = simdi.getFullYear();
+            const mm = String(simdi.getMonth() + 1).padStart(2, '0');
+            const dd = String(simdi.getDate()).padStart(2, '0');
+            const bugunTarihi = `${yyyy}-${mm}-${dd}`;
+            
+            const suAnkiSaatText = String(simdi.getHours()).padStart(2, '0') + ":" + String(simdi.getMinutes()).padStart(2, '0');
+
             timeSelect.innerHTML = '<option value="" disabled selected>Saat Seçiniz...</option>';
             timeSelect.disabled = false;
 
@@ -154,10 +173,17 @@
                 const option = document.createElement('option');
                 option.value = saat;
 
+                // Tarih bugünse ve döngüdeki saat şu anki zamandan gerideyse engelle
+                const zamanGectiMi = (secilenTarih === bugunTarihi && saat <= suAnkiSaatText);
+
                 if (durum === "DOLU") {
                     option.textContent = `${saat} (DOLU)`;
                     option.disabled = true;
                     option.className = "text-red-500 bg-slate-800 opacity-40";
+                } else if (zamanGectiMi) {
+                    option.textContent = `${saat} (GEÇTİ)`;
+                    option.disabled = true;
+                    option.className = "text-slate-600 bg-slate-800 opacity-30 style='text-decoration: line-through;'";
                 } else {
                     option.textContent = saat;
                     option.className = "text-white bg-slate-900";
@@ -209,5 +235,5 @@
         });
     </script>
 </body>
-                        </html>
-    
+    </html>
+                        
