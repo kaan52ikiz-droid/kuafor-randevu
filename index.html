@@ -3,91 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaan Usta - Kuaför Randevu Sistemi</title>
+    <title>Profesyonel Randevu Sistemi</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 flex flex-col justify-between">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
-    <main class="max-w-md w-full mx-auto bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-2xl my-auto space-y-6">
-        <header class="text-center">
-            <h1 class="text-3xl font-extrabold text-amber-500 uppercase tracking-wider">Kaan Usta</h1>
-            <p class="text-xs text-slate-400 mt-1">Erkek Kuaförü & Saç Tasarım</p>
-        </header>
-
-        <form id="appointmentForm" class="space-y-4">
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Adınız Soyadınız</label>
-                <input type="text" id="clientName" required placeholder="Örn: Ahmet Yılmaz" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Hizmet Seçiniz</label>
-                <select id="serviceType" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-                    <option value="" disabled selected>Hizmet seçin...</option>
-                    <option value="Saç Kesimi">Saç Kesimi</option>
-                    <option value="Sakal Tıraşı">Sakal Tıraşı</option>
-                    <option value="Saç & Sakal Kombin">Saç & Sakal Kombin</option>
-                    <option value="Cilt Bakımı & Maske">Cilt Bakımı & Maske</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Berber Seçiniz</label>
-                <select id="barberName" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-                    <option value="" disabled selected>Koltuk seçin...</option>
-                    <option value="Kaan Usta">Kaan Usta</option>
-                    <option value="Kerem Kalfa">Kerem Kalfa</option>
-                    <option value="Taha Kalfa">Taha Kalfa</option>
-                </select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tarih</label>
-                    <input type="date" id="appDate" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Saat</label>
-                    <input type="time" id="appTime" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-                </div>
-            </div>
-
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg transition uppercase tracking-wider text-sm cursor-pointer">Randevu Oluştur</button>
-        </form>
-
-        <div id="successCard" class="hidden bg-slate-900/80 border border-emerald-500/30 p-5 rounded-xl text-center space-y-4">
-            <p class="text-emerald-400 font-bold text-md">🎉 Randevunuz Sistemde Hazır!</p>
-            <p class="text-xs text-slate-300 px-2 leading-relaxed">Randevunuzun dükkan takvimine kesin olarak işlenmesi için lütfen aşağıdaki butona tıklayarak WhatsApp üzerinden onay mesajı gönderiniz.</p>
-            <a id="whatsappBtn" target="_blank" class="block w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl transition uppercase tracking-wider text-xs shadow-md">
-                🟢 WhatsApp İle Onayla & Kaydet
-            </a>
+    <div class="max-w-md w-full flex flex-col gap-4">
+        
+        <div id="lastApptBanner" class="hidden bg-slate-800/90 border border-slate-700 px-4 py-3 rounded-xl text-center text-xs text-slate-300">
+            ℹ️ <span id="lastApptText"></span>
         </div>
-    </main>
+
+        <div class="w-full bg-slate-800 p-6 rounded-2xl shadow-2xl border border-slate-700 space-y-5">
+            <header class="text-center">
+                <h1 class="text-2xl font-bold tracking-tight text-white">Randevu Takvimi</h1>
+                <p class="text-xs text-slate-400 mt-1">Lütfen bilgilerinizi eksiksiz doldurarak saatinizi seçiniz.</p>
+            </header>
+
+            <form id="appointmentForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Adınız Soyadınız</label>
+                    <input type="text" id="clientName" required placeholder="Örn: Ahmet Yılmaz" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Telefon Numaranız</label>
+                    <input type="tel" id="clientPhone" required placeholder="(5XX) XXX XX XX" maxlength="15" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Talep Edilen Hizmet</label>
+                    <select id="serviceType" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white">
+                        <option value="" disabled selected>Hizmet seçiniz...</option>
+                        <option value="Saç Kesimi">Saç Kesimi (200 TL)</option>
+                        <option value="Sakal Tıraşı">Sakal Tıraşı (100 TL)</option>
+                        <option value="Saç & Sakal Kombin">Saç & Sakal Kombin (280 TL)</option>
+                    </select>
+                </div>
+
+                <div id="priceDisplay" class="hidden bg-slate-900/60 p-3 rounded-xl border border-slate-700/60 text-center text-xs font-medium text-slate-300">
+                    💵 Ödenecek Toplam Tutar: <span id="netPrice" class="text-emerald-400 font-bold">--</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Berber / Koltuk</label>
+                    <select id="barberName" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white">
+                        <option value="" disabled selected>Usta seçiniz...</option>
+                        <option value="Kaan Usta">Kaan Usta</option>
+                        <option value="Kerem Kalfa">Kerem Kalfa</option>
+                        <option value="Taha Kalfa">Taha Kalfa</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tarih</label>
+                        <input type="date" id="appDate" required class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Müsait Saatler</label>
+                        <select id="appTime" required disabled class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="" disabled selected>Önce tarih/usta seçin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Varsa Eklemek İstediğiniz Not</label>
+                    <textarea id="clientNote" rows="2" placeholder="Örn: Saç yıkama istemiyorum, sadece kesim." class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-2 text-sm focus:border-blue-500 outline-none transition text-white resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition uppercase tracking-wider text-sm cursor-pointer mt-2">Randevuyu Tamamla</button>
+            </form>
+
+            <div id="successCard" class="hidden bg-slate-900/90 border border-emerald-500/20 p-5 rounded-xl text-center space-y-4">
+                <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center rounded-full mx-auto text-xl font-bold">✓</div>
+                <h2 class="text-lg font-bold text-emerald-400">Randevu Bilgileriniz Oluşturuldu</h2>
+                <p class="text-xs text-slate-300 px-2 leading-relaxed">Randevunuzun dükkan sistemine kalıcı olarak işlenmesi için lütfen aşağıdaki butona basarak onay e-postasını gönderiniz.</p>
+                
+                <a id="mailBtn" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition uppercase tracking-wider text-xs shadow-md">
+                    ✉️ E-Posta İle Onayla & Gönder
+                </a>
+                
+                <a id="calendarBtn" target="_blank" class="inline-block text-xs text-slate-400 underline mt-2 hover:text-slate-300 cursor-pointer">
+                    📅 Bu Randevuyu Telefon Takvime Ekle
+                </a>
+            </div>
+        </div>
+    </div>
 
     <script>
+        const DUKKAN_EMAIL = "kaanusta52@gmail.com"; // Burayı kendi e-postanızla güncelleyebilirsiniz.
+
         const form = document.getElementById('appointmentForm');
         const successCard = document.getElementById('successCard');
-        const whatsappBtn = document.getElementById('whatsappBtn');
-        
-        // Sizin numaranız tanımlandı usta:
-        const DUKKAN_TELEFON = "905519611852"; 
+        const mailBtn = document.getElementById('mailBtn');
+        const serviceSelect = document.getElementById('serviceType');
+        const dateInput = document.getElementById('appDate');
+        const barberSelect = document.getElementById('barberName');
+        const timeSelect = document.getElementById('appTime');
+        const phoneInput = document.getElementById('clientPhone');
 
+        // Sabit Fiyat Listesi
+        const fiyatlar = {
+            "Saç Kesimi": "200 TL",
+            "Sakal Tıraşı": "100 TL",
+            "Saç & Sakal Kombin": "280 TL"
+        };
+
+        // Dükkan Standart Çalışma Saat Dilimleri (30 Dakika Arayla)
+        const calismaSaatleri = [
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", 
+            "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", 
+            "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", 
+            "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"
+        ];
+
+        // Geçmiş günlerin seçilmesini engelle
+        dateInput.min = new Date().toISOString().split('T')[0];
+
+        // Telefon Numarası Format Maskesi
+        phoneInput.addEventListener('input', (e) => {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+        });
+
+        // Hizmet değişince sade fiyat gösterimi
+        serviceSelect.addEventListener('change', () => {
+            if(fiyatlar[serviceSelect.value]) {
+                document.getElementById('priceDisplay').classList.remove('hidden');
+                document.getElementById('netPrice').innerText = fiyatlar[serviceSelect.value];
+            }
+        });
+
+        // Tarih veya Berber değiştiğinde Saat Listesini Güncelle ve Doluluk Kontrolü Yap
+        [dateInput, barberSelect].forEach(element => {
+            element.addEventListener('change', updateAvailableHours);
+        });
+
+        function updateAvailableHours() {
+            const secilenTarih = dateInput.value;
+            const secilenBerber = barberSelect.value;
+
+            if(!secilenTarih || !secilenBerber) {
+                timeSelect.disabled = true;
+                return;
+            }
+
+            // Pazar Günü Kontrolü
+            const günIndeksi = new Date(secilenTarih).getDay();
+            if(günIndeksi === 0) {
+                alert("Dükkanımız Pazar günleri kapalıdır. Lütfen başka bir tarih seçiniz.");
+                dateInput.value = "";
+                timeSelect.disabled = true;
+                return;
+            }
+
+            timeSelect.innerHTML = '<option value="" disabled selected>Saat Seçiniz...</option>';
+            timeSelect.disabled = false;
+
+            calismaSaatleri.forEach(saat => {
+                // Her randevu için benzersiz kimlik (Tarih + Berber + Saat)
+                const benzersizAnahtar = `appt_${secilenTarih}_${secilenBerber.replace(/\s+/g, '')}_${saat}`;
+                const durum = localStorage.getItem(benzersizAnahtar);
+
+                const option = document.createElement('option');
+                option.value = saat;
+
+                if (durum === "DOLU") {
+                    option.textContent = `${saat} (DOLU)`;
+                    option.disabled = true;
+                    option.className = "text-red-500 bg-slate-800 opacity-40";
+                } else {
+                    option.textContent = saat;
+                    option.className = "text-white bg-slate-900";
+                }
+                timeSelect.appendChild(option);
+            });
+        }
+
+        // Form Onaylandığında Tetiklenen İşlemler
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             const name = document.getElementById('clientName').value;
-            const service = document.getElementById('serviceType').value;
-            const barber = document.getElementById('barberName').value;
-            const date = document.getElementById('appDate').value.split('-').reverse().join('.');
-            const time = document.getElementById('appTime').value;
+            const phone = phoneInput.value;
+            const service = serviceSelect.value;
+            const barber = barberSelect.value;
+            const rawDate = dateInput.value;
+            const displayDate = rawDate.split('-').reverse().join('.');
+            const time = timeSelect.value;
+            const note = document.getElementById('clientNote').value || "Belirtilmedi";
 
-            const mesaj = `Merhaba Kaan Usta,%0A%0A🗓️ *Yeni Randevu Onayı*:%0A👤 *Müşteri:* ${name}%0A✂️ *Hizmet:* ${service}%0A💈 *Berber:* ${barber}%0A📅 *Tarih:* ${date}%0A⏰ *Saat:* ${time}%0A%0AOnayınızı rica ederim, iyi çalışmalar!`;
+            // Arka planda o saati kilitle
+            const benzersizAnahtar = `appt_${rawDate}_${barber.replace(/\s+/g, '')}_${time}`;
+            localStorage.setItem(benzersizAnahtar, "DOLU");
 
-            whatsappBtn.href = `https://wa.me/${DUKKAN_TELEFON}?text=${mesaj}`;
+            // Müşterinin son randevusunu tarayıcıya kaydet (Hafıza özelliği)
+            const sonRandevuBilgisi = `${displayDate} tarihinde saat ${time} için ${barber}`;
+            localStorage.setItem('son_randevu_kaydi', sonRandevuBilgisi);
 
+            // Mail Gönderim Ayarları
+            const emailKonu = `Randevu Talebi - ${name}`;
+            const emailIcerik = `Müşteri Adı: ${name}\nTelefon: ${phone}\nHizmet: ${service}\nBerber: ${barber}\nTarih: ${displayDate}\nSaat: ${time}\nMüşteri Notu: ${note}`;
+            mailBtn.href = `mailto:${DUKKAN_EMAIL}?subject=${encodeURIComponent(emailKonu)}&body=${encodeURIComponent(emailIcerik)}`;
+
+            // Google Takvim Hatırlatıcı Link Üretici
+            const gCalTarihBaslangic = rawDate.replace(/-/g, '') + 'T' + time.replace(':', '') + '00';
+            const bitisSaati = parseInt(time.split(':')[0]) + 1; // Standart 1 saat sonrasına bitiş yazar
+            const gCalTarihBitis = rawDate.replace(/-/g, '') + 'T' + (bitisSaati < 10 ? '0' + bitisSaati : bitisSaati) + time.split(':')[1] + '00';
+            document.getElementById('calendarBtn').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Berber Randevusu')}&dates=${gCalTarihBaslangic}/${gCalTarihBitis}&details=${encodeURIComponent(service + ' - ' + barber)}`;
+
+            // Formu Kapat, Onay Kartını Aç
             form.classList.add('hidden');
             successCard.classList.remove('hidden');
         });
+
+        // Sayfa Yüklendiğinde Son Randevu Hafızasını Kontrol Et
+        window.addEventListener('DOMContentLoaded', () => {
+            const hafizadakiRandevu = localStorage.getItem('son_randevu_kaydi');
+            if(hafizadakiRandevu) {
+                document.getElementById('lastApptBanner').classList.remove('hidden');
+                document.getElementById('lastApptText').innerText = `Son aldığınız randevu: ${hafizadakiRandevu}`;
+            }
+        });
     </script>
 </body>
-</html>
+                                                                                                                </html>
+                            
