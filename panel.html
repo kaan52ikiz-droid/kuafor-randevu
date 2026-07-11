@@ -3,53 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dükkan Yönetim Paneli - Kesin ve Kalıcı Çözüm</title>
+    <title>Dükkan Yönetim Paneli - Premium Sürüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50 p-4 transition-all duration-300">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center space-y-6">
+            <div class="space-y-2">
+                <div class="text-4xl">💈</div>
+                <h2 class="text-xl font-bold text-white tracking-tight">Yönetici Girişi</h2>
+                <p class="text-xs text-slate-400">Lütfen panele erişmek için dükkan şifresini girin.</p>
+            </div>
+            <div class="space-y-3">
+                <input type="password" id="passInput" placeholder="••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-widest text-indigo-400 outline-none focus:border-indigo-500 transition">
+                <button type="button" onclick="kontrolEtVeGirisYap()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm uppercase tracking-wide shadow-lg shadow-indigo-600/20 active:scale-98 transition cursor-pointer">Giriş Yap</button>
+            </div>
+            <p class="text-[10px] text-slate-500">Varsayılan Şifre: <span class="font-bold text-slate-400">1234</span></p>
+        </div>
+    </div>
+
+    <div id="mainContent" class="hidden max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         
         <header class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-white tracking-tight">Dükkan Yönetim & Yönetici Paneli</h1>
-                <p class="text-xs text-slate-400 mt-1">Eski ve yeni tüm cihazlarla %100 uyumlu, donmayan kararlı sürüm.</p>
+            <div class="text-center md:text-left">
+                <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Yönetim Paneli v2.0</span>
+                <h1 class="text-2xl font-black text-white tracking-tight mt-1">Dükkan Finans & Randevu Matrisi</h1>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2">
-                    <label class="text-xs font-semibold text-slate-400 uppercase">Dönem:</label>
-                    <input type="month" id="monthFilter" class="bg-transparent text-sm font-bold text-white outline-none cursor-pointer">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <div class="bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-inner">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Aktif Dönem:</label>
+                    <input type="month" id="monthFilter" onchange="guvenliYenile()" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer">
                 </div>
-                <button type="button" onclick="verileriSifirla()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/50 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer">
-                    ⚙️ Sistemi Temizle
-                </button>
+                <button type="button" onclick="oturumuKapat()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer">🔒 Çıkış Yap</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
-                <span class="text-xs font-semibold text-slate-400 uppercase block">Toplam Aylık Gelir</span>
-                <span id="totalIncomeDisplay" class="text-xl font-bold text-emerald-400">0.00 TL</span>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg border-l-4 border-l-emerald-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Aylık Toplam Gelir</span>
+                <span id="totalIncomeDisplay" class="text-lg md:text-xl font-black text-emerald-400 block mt-1">0.00 TL</span>
             </div>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
-                <span class="text-xs font-semibold text-slate-400 uppercase block">Toplam Aylık Gider</span>
-                <span id="totalExpenseDisplay" class="text-xl font-bold text-red-400">0.00 TL</span>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg border-l-4 border-l-rose-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Aylık Toplam Gider</span>
+                <span id="totalExpenseDisplay" class="text-lg md:text-xl font-black text-rose-400 block mt-1">0.00 TL</span>
             </div>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
-                <span class="text-xs font-semibold text-slate-400 uppercase block">Net Kâr / Zarar</span>
-                <span id="netProfitDisplay" class="text-xl font-bold text-blue-400">0.00 TL</span>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg border-l-4 border-l-indigo-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Net Kâr / Zarar</span>
+                <span id="netProfitDisplay" class="text-lg md:text-xl font-black text-indigo-400 block mt-1">0.00 TL</span>
             </div>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
-                <span class="text-xs font-semibold text-slate-400 uppercase block">Bekleyen Toplam Alacak</span>
-                <span id="totalReceivableDisplay" class="text-xl font-bold text-amber-400">0.00 TL</span>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg border-l-4 border-l-amber-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Bekleyen Alacak (Borç)</span>
+                <span id="totalReceivableDisplay" class="text-lg md:text-xl font-black text-amber-400 block mt-1">0.00 TL</span>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <div class="space-y-4">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg space-y-2">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">💰 Gelir Ekle</h2>
+                
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xs font-black uppercase tracking-wider text-emerald-400">💰 GELİR EKLE</h2>
+                        <button onclick="tarihSetEt('incDate')" class="text-[10px] text-indigo-400 hover:underline">📅 Bugün Yap</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button onclick="hizliGelirEkle(100, 'Saç Kesimi')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500/50 p-2 rounded-lg text-[10px] text-slate-300 transition font-medium">✂️ Saç <b class="text-emerald-400 block">+100TL</b></button>
+                        <button onclick="hizliGelirEkle(50, 'Sakal Tıraşı')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500/50 p-2 rounded-lg text-[10px] text-slate-300 transition font-medium">🪒 Sakal <b class="text-emerald-400 block">+50TL</b></button>
+                        <button onclick="hizliGelirEkle(150, 'Saç & Sakal Kombin')" class="bg-slate-950 border border-slate-800 hover:border-emerald-500/50 p-2 rounded-lg text-[10px] text-slate-300 transition font-medium">👑 Kombin <b class="text-emerald-400 block">+150TL</b></button>
+                    </div>
+                    <div class="relative"><hr class="border-slate-800 my-1"><span class="absolute left-1/2 -top-2 bg-slate-900 px-2 text-[8px] text-slate-500 -translate-x-1/2">VEYA MANUEL GİR</span></div>
                     <input type="date" id="incDate" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <input type="number" id="incAmount" step="any" placeholder="Tutar (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <select id="incDesc" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
@@ -58,294 +81,232 @@
                         <option value="Saç & Sakal Kombin">Saç & Sakal Kombin</option>
                         <option value="Diğer Gelir">Diğer Gelir</option>
                     </select>
-                    <button type="button" onclick="gelirKaydet()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide cursor-pointer transition">Gelir Kaydet</button>
+                    <button type="button" onclick="gelirManuelKaydet()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide shadow-md transition cursor-pointer">Gelir Kaydet</button>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg space-y-2">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-red-400 mb-1">💸 Gider Ekle</h2>
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xs font-black uppercase tracking-wider text-rose-400">💸 GIDER EKLE</h2>
+                        <button onclick="tarihSetEt('expDate')" class="text-[10px] text-indigo-400 hover:underline">📅 Bugün Yap</button>
+                    </div>
                     <input type="date" id="expDate" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="number" id="expAmount" step="any" placeholder="Tutar (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="text" id="expDesc" placeholder="Gider Açıklaması (Örn: Kira, Fatura)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <button type="button" onclick="giderKaydet()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide cursor-pointer transition">Gider Kaydet</button>
+                    <input type="number" id="expAmount" step="any" placeholder="Gider Tutarı (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <input type="text" id="expDesc" placeholder="Gider Açıklaması (Örn: Kira, Fatura, Malzeme)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <button type="button" onclick="giderKaydet()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide shadow-md transition cursor-pointer">Gider Kaydet</button>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg space-y-2">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">📝 Veresiye / Borç Kaydet</h2>
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-3">
+                    <h2 class="text-xs font-black uppercase tracking-wider text-amber-400">📖 VERESİYE DEFTERİNE YAZ</h2>
                     <input type="text" id="debtName" placeholder="Müşteri Adı Soyadı" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                     <input type="number" id="debtAmount" step="any" placeholder="Borç Tutarı (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <input type="text" id="debtDesc" placeholder="Yapılan İşlem (Örn: Damat Tıraşı)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
-                    <button type="button" onclick="veresiyeKaydet()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide cursor-pointer transition">Deftere Yaz</button>
+                    <input type="text" id="debtDesc" placeholder="Yapılan İşlem (Örn: Damat Tıraşı Veresiye)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                    <button type="button" onclick="veresiyeKaydet()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide shadow-md transition cursor-pointer">Deftere Borç Yaz</button>
                 </div>
 
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg space-y-3">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-3">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1 block">📊 Bugünün Doluluk Oranı</span>
+                        <span class="text-xs font-black uppercase tracking-wider text-indigo-400 mb-1 block">📊 Bugünün Doluluk Oranı</span>
                         <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-                            <div id="occupancyBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="occupancyBar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <span id="occupancyText" class="text-[10px] text-slate-400 mt-1 block">Hesaplanıyor...</span>
+                        <span id="occupancyText" class="text-[10px] text-slate-400 mt-1 block">Yükleniyor...</span>
                     </div>
                     <hr class="border-slate-800">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-1 block">📈 Popüler Hizmet Dağılımı</span>
-                        <div id="serviceStatsList" class="text-xs space-y-1 text-slate-300"></div>
+                        <span class="text-xs font-black uppercase tracking-wider text-amber-400 mb-1 block">📈 Popüler Hizmet Dağılımı</span>
+                        <div id="serviceStatsList" class="text-xs space-y-1 text-slate-300">Veri hesaplanıyor...</div>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-2 space-y-4">
+                
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-purple-400 mb-3">📅 Sistemdeki Aktif Randevular</h2>
-                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminApptList"></div>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-purple-400 mb-3">📅 Sistemdeki Aktif Randevular</h2>
+                    <div class="overflow-y-auto max-h-[160px] space-y-2 pr-1 text-slate-300" id="adminApptList">Yükleniyor...</div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3">📖 Aktif Veresiye / Borç Listesi</h2>
-                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminDebtList"></div>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-amber-400 mb-3">📖 Aktif Veresiye / Alacak Listesi</h2>
+                    <div class="overflow-y-auto max-h-[160px] space-y-2 pr-1 text-slate-300" id="adminDebtList">Yükleniyor...</div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">📝 Günlük Finansal Hareket Raporu</h2>
-                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="financeLogs"></div>
+                    <h2 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">📝 Dönemsel Finansal Hareket Raporu</h2>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-1 text-slate-300" id="financeLogs">Yükleniyor...</div>
                 </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-3">
+                    <h2 class="text-xs font-black uppercase tracking-wider text-cyan-400">💾 Güvenli Veri Yedekleme & Geri Yükleme</h2>
+                    <p class="text-[10px] text-slate-400">Tarayıcın verileri silerse korumak için buradaki kodları kopyalayıp notlarına yedekle. İstediğinde buraya yapıştırıp yükle diyebilirsin.</p>
+                    <textarea id="backupTextArea" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[10px] font-mono text-slate-400 outline-none focus:border-cyan-500" readonly></textarea>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="veriYedek Kopyala()" class="bg-cyan-950 hover:bg-cyan-900 text-cyan-400 border border-cyan-900 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">📋 Kodu Kopyala</button>
+                        <button type="button" onclick="veriGeriYuklePrompt()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">📥 Yedekten Geri Yükle</button>
+                        <button type="button" onclick="sistemiKöktenTemizle()" class="ml-auto bg-red-950/50 hover:bg-red-900 text-red-400 border border-red-900 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">⚙️ Tüm Sistemi Sıfırla</button>
+                    </div>
+                </div>
+
             </div>
 
         </div>
     </div>
 
     <script>
-        // EVRENSEL KÜRESEL DEĞİŞKENLER (Eski Tarz ES5 - Var Yapısı)
+        // GLOBAL VERİTABANI MODELİ
         var finansDb = { gelirler: [], giderler: [], borclar: [] };
-        var hafizaMevcut = true;
 
-        // Tarayıcı hafıza kısıtlama kontrolü
-        try {
-            var testHafiza = localStorage.getItem('dükkan_finans_db');
-        } catch (e) {
-            hafizaMevcut = false;
+        // GÜVENLİ DOM YAZIM YARDIMCILARI (Kilitlenmeyi Önleyen Zırhlar)
+        function safeSetText(id, text) {
+            try { var el = document.getElementById(id); if (el) el.innerText = text; } catch(e){}
+        }
+        function safeSetHtml(id, html) {
+            try { var el = document.getElementById(id); if (el) el.innerHTML = html; } catch(e){}
         }
 
-        // VERİTABANI YÜKLEME MOTORU (Tam Koruma)
-        try {
-            if (hafizaMevcut) {
-                var kayitliVeri = localStorage.getItem('dükkan_finans_db');
-                if (kayitliVeri) {
-                    var geciciDb = JSON.parse(kayitliVeri);
-                    if (geciciDb && typeof geciciDb === 'object') {
-                        if (geciciDb.gelirler && Array.isArray(geciciDb.gelirler)) finansDb.gelirler = geciciDb.gelirler;
-                        if (geciciDb.giderler && Array.isArray(geciciDb.giderler)) finansDb.giderler = geciciDb.giderler;
-                        if (geciciDb.borclar && Array.isArray(geciciDb.borclar)) finansDb.borclar = geciciDb.borclar;
+        // TARAYICI HAFIZA DENETÇİSİ
+        function getStorage() {
+            try { if (typeof localStorage !== 'undefined' && localStorage !== null) return localStorage; } catch(e){}
+            return null;
+        }
+
+        // VERİLERİ HAFIZADAN ÇEKME MOTORU
+        function veritabaniYukle() {
+            var storage = getStorage();
+            if (storage) {
+                try {
+                    var data = storage.getItem('dükkan_finans_db');
+                    if (data) {
+                        var parsed = JSON.parse(data);
+                        if (parsed) {
+                            if (parsed.gelirler && Array.isArray(parsed.gelirler)) finansDb.gelirler = parsed.gelirler;
+                            if (parsed.giderler && Array.isArray(parsed.giderler)) finansDb.giderler = parsed.giderler;
+                            if (parsed.borclar && Array.isArray(parsed.borclar)) finansDb.borclar = parsed.borclar;
+                        }
                     }
-                }
+                } catch(e) { console.log("Hafıza okuma pas geçildi."); }
             }
-        } catch (e) {
-            console.log("Hafıza yükleme pas geçildi.");
         }
 
-        // ESKİ CİHAZ UYUMLU TARİH MOTORU (padStart kullanılmadı)
-        var bugun = new Date();
-        var yilinAyi = bugun.getMonth() + 1;
-        var ayStr = yilinAyi < 10 ? '0' + yilinAyi : '' + yilinAyi;
-        var yyyyMm = bugun.getFullYear() + "-" + ayStr;
+        // TARİH YAPILANDIRMASI
+        var simdi = new Date();
+        var y = simdi.getFullYear();
+        var m = simdi.getMonth() + 1;
+        var d = simdi.getDate();
+        var varsayilanAy = y + "-" + (m < 10 ? "0" + m : m);
+        var varsayilanGun = varsayilanAy + "-" + (d < 10 ? "0" + d : d);
 
-        var gununGunu = bugun.getDate();
-        var gunStr = gununGunu < 10 ? '0' + gununGunu : '' + gununGunu;
-        var yyyyMmDd = bugun.getFullYear() + "-" + ayStr + "-" + gunStr;
-        
-        // İlk değer atamaları
+        // FORM TARİHLERİNİ İLKLEYİCİ
         try {
-            var mFilter = document.getElementById('monthFilter');
-            if (mFilter) mFilter.value = yyyyMm;
-            
-            var iDate = document.getElementById('incDate');
-            if (iDate) iDate.value = yyyyMmDd;
-            
-            var eDate = document.getElementById('expDate');
-            if (eDate) eDate.value = yyyyMmDd;
-        } catch (e) {}
+            document.getElementById('monthFilter').value = varsayilanAy;
+            document.getElementById('incDate').value = varsayilanGun;
+            document.getElementById('expDate').value = varsayilanGun;
+        } catch(e){}
 
-        // GELİR KAYDETME
-        function gelirKaydet() {
+        function tarihSetEt(inputId) {
+            try { document.getElementById(inputId).value = varsayilanGun; } catch(e){}
+        }
+
+        // 🔐 ŞİFRE VE OTURUM KONTROL MOTORU
+        function kontrolEtVeGirisYap() {
+            var inputNode = document.getElementById('passInput');
+            if (!inputNode) return;
+            
+            // PANEL GİRİŞ ŞİFRESİ BURADAN DEĞİŞTİRİLEBİLİR (Varsayılan: 1234)
+            if (inputNode.value === "5252") {
+                try { sessionStorage.setItem('panel_auth', 'true'); } catch(e){}
+                ekraniAc();
+            } else {
+                alert("Hatalı Şifre Usta! Lütfen tekrar dene.");
+                inputNode.value = '';
+                inputNode.focus();
+            }
+        }
+
+        function ekraniAc() {
             try {
-                var amountInput = document.getElementById('incAmount');
-                var dateInput = document.getElementById('incDate');
-                var descInput = document.getElementById('incDesc');
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                veritabaniYukle();
+                guvenliYenile();
+            } catch(e){}
+        }
 
-                var tutar = parseFloat(amountInput.value);
-                if (!amountInput.value || isNaN(tutar)) {
-                    alert("Lütfen geçerli bir gelir tutarı girin usta!");
-                    return;
-                }
+        function oturumuKapat() {
+            try { sessionStorage.removeItem('panel_auth'); } catch(e){}
+            window.location.reload();
+        }
+
+        // Sayfa ilk yüklendiğinde şifre kontrolü yap
+        window.onload = function() {
+            var authed = false;
+            try { if(sessionStorage.getItem('panel_auth') === 'true') authed = true; } catch(e){}
+            if (authed) {
+                ekraniAc();
+            } else {
+                try {
+                    document.getElementById('passInput').addEventListener("keypress", function(event) {
+                        if (event.key === "Enter") { event.preventDefault(); kontrolEtVeGirisYap(); }
+                    });
+                } catch(e){}
+            }
+        };
+
+        // 📝 VERİ KAYDETME VE YENİLEME TETİKLEYİCİSİ
+        function veriKaydetVeYenile() {
+            var storage = getStorage();
+            if (storage) {
+                try { storage.setItem('dükkan_finans_db', JSON.stringify(finansDb)); } catch(e){}
+            }
+            guvenliYenile();
+        }
+
+        // ⚡ HIZLI EKLEME BUTON MOTORU
+        function hizliGelirEkle(tutar, aciklama) {
+            try {
+                finansDb.gelirler.push({
+                    id: new Date().getTime() + Math.random(),
+                    tarih: varsayilanGun,
+                    tutar: parseFloat(tutar),
+                    tanim: aciklama
+                });
+                veriKaydetVeYenile();
+            } catch(e){ alert("Hızlı ekleme başarısız!"); }
+        }
+
+        // 💰 MANUEL GELİR KAYDI
+        function gelirManuelKaydet() {
+            try {
+                var amt = document.getElementById('incAmount');
+                var dt = document.getElementById('incDate');
+                var desc = document.getElementById('incDesc');
+                var t = parseFloat(amt.value);
+
+                if (!amt.value || isNaN(t)) { alert("Lütfen geçerli bir tutar yaz usta!"); return; }
 
                 finansDb.gelirler.push({
                     id: new Date().getTime(),
-                    tarih: dateInput.value || yyyyMmDd,
-                    tutar: tutar,
-                    tanim: descInput.value
+                    tarih: dt.value || varsayilanGun,
+                    tutar: t,
+                    tanim: desc.value
                 });
-
                 veriKaydetVeYenile();
-                amountInput.value = '';
-            } catch (err) {
-                alert("Hata: " + err.message);
-            }
+                amt.value = '';
+            } catch(e){ alert("Gelir kaydedilemedi."); }
         }
 
-        // GİDER KAYDETME
+        // 💸 GİDER KAYDI
         function giderKaydet() {
             try {
-                var amountInput = document.getElementById('expAmount');
-                var dateInput = document.getElementById('expDate');
-                var descInput = document.getElementById('expDesc');
+                var amt = document.getElementById('expAmount');
+                var dt = document.getElementById('expDate');
+                var desc = document.getElementById('expDesc');
+                var t = parseFloat(amt.value);
 
-                var tutar = parseFloat(amountInput.value);
-                if (!amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
-                    alert("Lütfen tutar ve açıklama alanlarını doldurun usta!");
-                    return;
-                }
+                if (!amt.value || isNaN(t) || !desc.value.trim()) { alert("Lütfen tutar ve açıklama gir usta!"); return; }
 
                 finansDb.giderler.push({
                     id: new Date().getTime(),
-                    tarih: dateInput.value || yyyyMmDd,
-                    tutar: tutar,
-                    tanim: descInput.value.trim()
-                });
-
-                veriKaydetVeYenile();
-                amountInput.value = '';
-                descInput.value = '';
-            } catch (err) {
-                alert("Hata: " + err.message);
-            }
-        }
-
-        // VERESİYE KAYDETME
-        function veresiyeKaydet() {
-            try {
-                var nameInput = document.getElementById('debtName');
-                var amountInput = document.getElementById('debtAmount');
-                var descInput = document.getElementById('debtDesc');
-
-                var tutar = parseFloat(amountInput.value);
-                if (!nameInput.value.trim() || !amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
-                    alert("Lütfen veresiye defteri için tüm alanları doldurun usta!");
-                    return;
-                }
-
-                finansDb.borclar.push({
-                    id: new Date().getTime(),
-                    tarih: yyyyMmDd,
-                    isim: nameInput.value.trim(),
-                    tutar: tutar,
-                    tanim: descInput.value.trim()
-                });
-
-                veriKaydetVeYenile();
-                nameInput.value = '';
-                amountInput.value = '';
-                descInput.value = '';
-            } catch (err) {
-                alert("Hata: " + err.message);
-            }
-        }
-
-        try {
-            var mFilterElem = document.getElementById('monthFilter');
-            if(mFilterElem) {
-                mFilterElem.onchange = yenileEkran;
-            }
-        } catch(e){}
-
-        function veriKaydetVeYenile() {
-            if (hafizaMevcut) {
-                try {
-                    localStorage.setItem('dükkan_finans_db', JSON.stringify(finansDb));
-                } catch (e) {}
-            }
-            yenileEkran();
-        }
-
-        // ANA EKRAN GÜNCELLEME MOTORU (Zırhlı Sürüm - Çökme İhtimali Sıfır)
-        function yenileEkran() {
-            try {
-                var mFilter = document.getElementById('monthFilter');
-                if(mFilter && !mFilter.value) {
-                    mFilter.value = yyyyMm;
-                }
-                
-                var seciliAy = mFilter ? mFilter.value : yyyyMm;
-                var toplamGelir = 0;
-                var toplamGider = 0;
-                var toplamAlacak = 0;
-                var logHTML = '';
-                var hizmetSayilari = {};
-
-                // Gelir Hesaplama (Klasik Hatasız For Döngüsü)
-                if (finansDb.gelirler && finansDb.gelirler.length) {
-                    for (var i = 0; i < finansDb.gelirler.length; i++) {
-                        var g = finansDb.gelirler[i];
-                        if(g && g.tarih && typeof g.tarih === 'string' && g.tarih.indexOf(seciliAy) === 0) {
-                            var gTutar = parseFloat(g.tutar) || 0;
-                            toplamGelir += gTutar;
-                            if(g.tanim) {
-                                hizmetSayilari[g.tanim] = (hizmetSayilari[g.tanim] || 0) + 1;
-                            }
-                            var tFormat = g.tarih.indexOf('-') !== -1 ? g.tarih.split('-').reverse().join('.') : g.tarih;
-                            logHTML += '<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">' +
-                                '<span class="text-emerald-400 font-medium">🟢 Gelir: ' + (g.tanim || 'Genel') + ' (' + tFormat + ')</span>' +
-                                '<span class="font-bold text-emerald-400">+' + gTutar.toFixed(2) + ' TL</span>' +
-                                '</div>';
-                        }
-                    }
-                }
-
-                // Gider Hesaplama (Klasik For Döngüsü)
-                if (finansDb.giderler && finansDb.giderler.length) {
-                    for (var j = 0; j < finansDb.giderler.length; j++) {
-                        var gi = finansDb.giderler[j];
-                        if(gi && gi.tarih && typeof gi.tarih === 'string' && gi.tarih.indexOf(seciliAy) === 0) {
-                            var giTutar = parseFloat(gi.tutar) || 0;
-                            toplamGider += giTutar;
-                            var tFormatGi = gi.tarih.indexOf('-') !== -1 ? gi.tarih.split('-').reverse().join('.') : gi.tarih;
-                            logHTML += '<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">' +
-                                '<span class="text-red-400 font-medium">🔴 Gider: ' + (gi.tanim || 'Gider') + ' (' + tFormatGi + ')</span>' +
-                                '<span class="font-bold text-red-400">-' + giTutar.toFixed(2) + ' TL</span>' +
-                                '</div>';
-                        }
-                    }
-                }
-
-                // Veresiye Defteri Listeleme (Klasik For Döngüsü)
-                var debtListContainer = document.getElementById('adminDebtList');
-                if(debtListContainer) {
-                    debtListContainer.innerHTML = '';
-                    if (finansDb.borclar && finansDb.borclar.length) {
-                        for (var k = 0; k < finansDb.borclar.length; k++) {
-                            var b = finansDb.borclar[k];
-                            if (b) {
-                                var bTutar = parseFloat(b.tutar) || 0;
-                                toplamAlacak += bTutar;
-                                var bTarih = b.tarih && typeof b.tarih === 'string' && b.tarih.indexOf('-') !== -1 ? b.tarih.split('-').reverse().join('.') : '../../..';
-                                
-                                var borckarti = document.createElement('div');
-                                borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
-                                borckarti.innerHTML = '<div><span class="font-bold text-amber-400">' + (b.isim || 'Müşteri') + '</span>' +
-                                    '<span class="text-slate-400 ml-1">(' + (b.tanim || 'Detay Yok') + ') - ' + bTarih + '</span></div>' +
-                                    '<div class="flex items-center gap-2"><span class="font-bold text-amber-400">' + bTutar.toFixed(2) + ' TL</span>' +
-                                    '<button type="button" onclick="veresiyeTahsilEt(' + b.id + ')" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button></div>';
-                                debtListContainer.appendChild(borckarti);
-                            }
-                        }
-                    }
-                    if(!finansDb.borclar || finansDb.borclar.length === 0) {
-                        debtListContainer.innerHTML = '<div class="text-center py-4 text-xs text-slate-600">Defterde bekleyen borç kaydı bulunmuyor.</div>';
-                    }
-                }
-
-                // Ekran Verilerini Güncelleme
-                document.getElementById('totalIncomeDisplay').innerText = toplamGelir.toFixed(2) + " TL";
-                document.getElementById('totalExpenseDisplay').innerText = toplamGider.toFixed(2) + " TL";
-                document.getElementById('totalReceivableDisplay').innerText = toplamAlacak.toFixed(2) + " TL";
-                
-                var netKar = toplamGelir - toplamGider;
-                var netDisplay 
+                    tarih: dt.value || varsayilanGun,
+                    tutar: t,
+                    tanim: desc.val
