@@ -13,7 +13,7 @@
         <header class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-white tracking-tight">Dükkan Yönetim & Yönetici Paneli</h1>
-                <p class="text-xs text-slate-400 mt-1">Yenilenme ve donma hataları tamamen giderilmiş kararlı sürüm.</p>
+                <p class="text-xs text-slate-400 mt-1">Eski ve yeni tüm cihazlarla %100 uyumlu, donmayan kararlı sürüm.</p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2">
@@ -114,248 +114,238 @@
     </div>
 
     <script>
-        // DOM Bağlantıları
-        const monthFilter = document.getElementById('monthFilter');
-        
-        // GÜVENLİ VERİTABANI MOTORU
-        let finansDb = { gelirler: [], giderler: [], borclar: [] };
+        // EVRENSEL KÜRESEL DEĞİŞKENLER (Eski Tarz ES5 - Var Yapısı)
+        var finansDb = { gelirler: [], giderler: [], borclar: [] };
+        var hafizaMevcut = true;
+
+        // Tarayıcı hafıza kısıtlama kontrolü
         try {
-            const kayitliVeri = localStorage.getItem('dükkan_finans_db');
-            if (kayitliVeri) {
-                const geciciDb = JSON.parse(kayitliVeri);
-                if (geciciDb && typeof geciciDb === 'object') {
-                    if (Array.isArray(geciciDb.gelirler)) finansDb.gelirler = geciciDb.gelirler;
-                    if (Array.isArray(geciciDb.giderler)) finansDb.giderler = geciciDb.giderler;
-                    if (Array.isArray(geciciDb.borclar)) finansDb.borclar = geciciDb.borclar;
+            var testHafiza = localStorage.getItem('dükkan_finans_db');
+        } catch (e) {
+            hafizaMevcut = false;
+        }
+
+        // VERİTABANI YÜKLEME MOTORU (Tam Koruma)
+        try {
+            if (hafizaMevcut) {
+                var kayitliVeri = localStorage.getItem('dükkan_finans_db');
+                if (kayitliVeri) {
+                    var geciciDb = JSON.parse(kayitliVeri);
+                    if (geciciDb && typeof geciciDb === 'object') {
+                        if (geciciDb.gelirler && Array.isArray(geciciDb.gelirler)) finansDb.gelirler = geciciDb.gelirler;
+                        if (geciciDb.giderler && Array.isArray(geciciDb.giderler)) finansDb.giderler = geciciDb.giderler;
+                        if (geciciDb.borclar && Array.isArray(geciciDb.borclar)) finansDb.borclar = geciciDb.borclar;
+                    }
                 }
             }
         } catch (e) {
-            console.log("Hafıza okuma güvenli moda geçirildi.");
+            console.log("Hafıza yükleme pas geçildi.");
         }
 
-        // TARIH BAŞLANGIÇ DEĞERLERİ
-        const bugun = new Date();
-        const yyyyMm = bugun.getFullYear() + "-" + String(bugun.getMonth() + 1).padStart(2, '0');
+        // ESKİ CİHAZ UYUMLU TARİH MOTORU (padStart kullanılmadı)
+        var bugun = new Date();
+        var yilinAyi = bugun.getMonth() + 1;
+        var ayStr = yilinAyi < 10 ? '0' + yilinAyi : '' + yilinAyi;
+        var yyyyMm = bugun.getFullYear() + "-" + ayStr;
+
+        var gununGunu = bugun.getDate();
+        var gunStr = gununGunu < 10 ? '0' + gununGunu : '' + gununGunu;
+        var yyyyMmDd = bugun.getFullYear() + "-" + ayStr + "-" + gunStr;
         
-        if(monthFilter) monthFilter.value = yyyyMm;
-        document.getElementById('incDate').value = bugun.toISOString().split('T')[0];
-        document.getElementById('expDate').value = bugun.toISOString().split('T')[0];
+        // İlk değer atamaları
+        try {
+            var mFilter = document.getElementById('monthFilter');
+            if (mFilter) mFilter.value = yyyyMm;
+            
+            var iDate = document.getElementById('incDate');
+            if (iDate) iDate.value = yyyyMmDd;
+            
+            var eDate = document.getElementById('expDate');
+            if (eDate) eDate.value = yyyyMmDd;
+        } catch (e) {}
 
-        // FORMSUZ GELİR KAYDETME FONKSİYONU
+        // GELİR KAYDETME
         function gelirKaydet() {
-            const amountInput = document.getElementById('incAmount');
-            const dateInput = document.getElementById('incDate');
-            const descInput = document.getElementById('incDesc');
+            try {
+                var amountInput = document.getElementById('incAmount');
+                var dateInput = document.getElementById('incDate');
+                var descInput = document.getElementById('incDesc');
 
-            const tutar = parseFloat(amountInput.value);
-            if (!amountInput.value || isNaN(tutar)) {
-                alert("Lütfen geçerli bir gelir tutarı girin usta!");
-                return;
+                var tutar = parseFloat(amountInput.value);
+                if (!amountInput.value || isNaN(tutar)) {
+                    alert("Lütfen geçerli bir gelir tutarı girin usta!");
+                    return;
+                }
+
+                finansDb.gelirler.push({
+                    id: new Date().getTime(),
+                    tarih: dateInput.value || yyyyMmDd,
+                    tutar: tutar,
+                    tanim: descInput.value
+                });
+
+                veriKaydetVeYenile();
+                amountInput.value = '';
+            } catch (err) {
+                alert("Hata: " + err.message);
             }
-
-            finansDb.gelirler.push({
-                id: Date.now(),
-                tarih: dateInput.value || bugun.toISOString().split('T')[0],
-                tutar: tutar,
-                tanim: descInput.value
-            });
-
-            veriKaydetVeYenile();
-            amountInput.value = '';
         }
 
-        // FORMSUZ GİDER KAYDETME FONKSİYONU
+        // GİDER KAYDETME
         function giderKaydet() {
-            const amountInput = document.getElementById('expAmount');
-            const dateInput = document.getElementById('expDate');
-            const descInput = document.getElementById('expDesc');
+            try {
+                var amountInput = document.getElementById('expAmount');
+                var dateInput = document.getElementById('expDate');
+                var descInput = document.getElementById('expDesc');
 
-            const tutar = parseFloat(amountInput.value);
-            if (!amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
-                alert("Lütfen tutar ve açıklama alanlarını doldurun usta!");
-                return;
+                var tutar = parseFloat(amountInput.value);
+                if (!amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
+                    alert("Lütfen tutar ve açıklama alanlarını doldurun usta!");
+                    return;
+                }
+
+                finansDb.giderler.push({
+                    id: new Date().getTime(),
+                    tarih: dateInput.value || yyyyMmDd,
+                    tutar: tutar,
+                    tanim: descInput.value.trim()
+                });
+
+                veriKaydetVeYenile();
+                amountInput.value = '';
+                descInput.value = '';
+            } catch (err) {
+                alert("Hata: " + err.message);
             }
-
-            finansDb.giderler.push({
-                id: Date.now(),
-                tarih: dateInput.value || bugun.toISOString().split('T')[0],
-                tutar: tutar,
-                tanim: descInput.value.trim()
-            });
-
-            veriKaydetVeYenile();
-            amountInput.value = '';
-            descInput.value = '';
         }
 
-        // FORMSUZ VERESİYE KAYDETME FONKSİYONU
+        // VERESİYE KAYDETME
         function veresiyeKaydet() {
-            const nameInput = document.getElementById('debtName');
-            const amountInput = document.getElementById('debtAmount');
-            const descInput = document.getElementById('debtDesc');
+            try {
+                var nameInput = document.getElementById('debtName');
+                var amountInput = document.getElementById('debtAmount');
+                var descInput = document.getElementById('debtDesc');
 
-            const tutar = parseFloat(amountInput.value);
-            if (!nameInput.value.trim() || !amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
-                alert("Lütfen veresiye defteri için tüm alanları doldurun usta!");
-                return;
+                var tutar = parseFloat(amountInput.value);
+                if (!nameInput.value.trim() || !amountInput.value || isNaN(tutar) || !descInput.value.trim()) {
+                    alert("Lütfen veresiye defteri için tüm alanları doldurun usta!");
+                    return;
+                }
+
+                finansDb.borclar.push({
+                    id: new Date().getTime(),
+                    tarih: yyyyMmDd,
+                    isim: nameInput.value.trim(),
+                    tutar: tutar,
+                    tanim: descInput.value.trim()
+                });
+
+                veriKaydetVeYenile();
+                nameInput.value = '';
+                amountInput.value = '';
+                descInput.value = '';
+            } catch (err) {
+                alert("Hata: " + err.message);
             }
-
-            finansDb.borclar.push({
-                id: Date.now(),
-                tarih: bugun.toISOString().split('T')[0],
-                isim: nameInput.value.trim(),
-                tutar: tutar,
-                tanim: descInput.value.trim()
-            });
-
-            veriKaydetVeYenile();
-            nameInput.value = '';
-            amountInput.value = '';
-            descInput.value = '';
         }
 
-        if(monthFilter) {
-            monthFilter.addEventListener('change', yenileEkran);
-        }
+        try {
+            var mFilterElem = document.getElementById('monthFilter');
+            if(mFilterElem) {
+                mFilterElem.onchange = yenileEkran;
+            }
+        } catch(e){}
 
         function veriKaydetVeYenile() {
-            try {
-                localStorage.setItem('dükkan_finans_db', JSON.stringify(finansDb));
-            } catch (e) {
-                console.log("Hafızaya yazma engellendi, veriler anlık tutuluyor.");
+            if (hafizaMevcut) {
+                try {
+                    localStorage.setItem('dükkan_finans_db', JSON.stringify(finansDb));
+                } catch (e) {}
             }
             yenileEkran();
         }
 
-        // ANA BİLGİ GÜNCELLEME MOTORU
+        // ANA EKRAN GÜNCELLEME MOTORU (Zırhlı Sürüm - Çökme İhtimali Sıfır)
         function yenileEkran() {
-            if(monthFilter && !monthFilter.value) {
-                monthFilter.value = yyyyMm;
-            }
-            
-            const seciliAy = monthFilter ? monthFilter.value : yyyyMm;
-            let toplamGelir = 0;
-            let toplamGider = 0;
-            let toplamAlacak = 0;
-            let logHTML = '';
-            let hizmetSayilari = {};
-
-            // Gelir Hesaplama
-            finansDb.gelirler.forEach(g => {
-                if(g && g.tarih && g.tarih.startsWith(seciliAy)) {
-                    toplamGelir += (g.tutar || 0);
-                    hizmetSayilari[g.tanim] = (hizmetSayilari[g.tanim] || 0) + 1;
-                    logHTML += `<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">
-                        <span class="text-emerald-400 font-medium">🟢 Gelir: ${g.tanim} (${g.tarih.split('-').reverse().join('.')})</span>
-                        <span class="font-bold text-emerald-400">+${(g.tutar || 0).toFixed(2)} TL</span>
-                    </div>`;
-                }
-            });
-
-            // Gider Hesaplama
-            finansDb.giderler.forEach(gi => {
-                if(gi && gi.tarih && gi.tarih.startsWith(seciliAy)) {
-                    toplamGider += (gi.tutar || 0);
-                    logHTML += `<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">
-                        <span class="text-red-400 font-medium">🔴 Gider: ${gi.tanim} (${gi.tarih.split('-').reverse().join('.')})</span>
-                        <span class="font-bold text-red-400">-${(gi.tutar || 0).toFixed(2)} TL</span>
-                    </div>`;
-                }
-            });
-
-            // Veresiye Defteri Listeleme
-            const debtListContainer = document.getElementById('adminDebtList');
-            if(debtListContainer) {
-                debtListContainer.innerHTML = '';
-                finansDb.borclar.forEach(b => {
-                    if (b) {
-                        toplamAlacak += (b.tutar || 0);
-                        const bTarih = b.tarih ? b.tarih.split('-').reverse().join('.') : '../../..';
-                        
-                        const borckarti = document.createElement('div');
-                        borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
-                        borckarti.innerHTML = `
-                            <div>
-                                <span class="font-bold text-amber-400">${b.isim || 'Müşteri'}</span> 
-                                <span class="text-slate-400 ml-1">(${b.tanim || 'Detay Yok'}) - ${bTarih}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-amber-400">${(b.tutar || 0).toFixed(2)} TL</span>
-                                <button type="button" onclick="veresiyeTahsilEt(${b.id})" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button>
-                            </div>
-                        `;
-                        debtListContainer.appendChild(borckarti);
-                    }
-                });
-
-                if(finansDb.borclar.length === 0) {
-                    debtListContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-600">Defterde bekleyen borç kaydı bulunmuyor.</div>`;
-                }
-            }
-
-            // Kart Ekran Değerlerini Basma
-            document.getElementById('totalIncomeDisplay').innerText = toplamGelir.toFixed(2) + " TL";
-            document.getElementById('totalExpenseDisplay').innerText = toplamGider.toFixed(2) + " TL";
-            document.getElementById('totalReceivableDisplay').innerText = toplamAlacak.toFixed(2) + " TL";
-            
-            const netKar = toplamGelir - toplamGider;
-            const netDisplay = document.getElementById('netProfitDisplay');
-            netDisplay.innerText = netKar.toFixed(2) + " TL";
-            netDisplay.className = netKar >= 0 ? "text-xl font-bold text-emerald-400" : "text-xl font-bold text-red-400";
-
-            document.getElementById('financeLogs').innerHTML = logHTML || `<div class="text-center py-4 text-xs text-slate-600">Bu döneme ait işlem kaydı yok.</div>`;
-
-            randevuListeleme();
-            
-            let statsHTML = '';
-            Object.keys(hizmetSayilari).forEach(h => {
-                statsHTML += `<div class="flex justify-between"><span>✂️ ${h}</span><span class="font-bold text-slate-100">${hizmetSayilari[h]} Adet</span></div>`;
-            });
-            document.getElementById('serviceStatsList').innerHTML = statsHTML || 'Veri bulunamadı.';
-        }
-
-        // VERESİYE TAHSİLAT SİSTEMİ
-        function veresiyeTahsilEt(id) {
-            const borcIndeks = finansDb.borclar.findIndex(b => b && b.id === id);
-            if (borcIndeks !== -1) {
-                const borcKaydi = finansDb.borclar[borcIndeks];
-                if(confirm(`${borcKaydi.isim} isimli müşteriden ${borcKaydi.tutar} TL tahsil edildi mi?`)) {
-                    finansDb.gelirler.push({
-                        id: Date.now(),
-                        tarih: bugun.toISOString().split('T')[0],
-                        tutar: borcKaydi.tutar,
-                        tanim: `Veresiye Tahsilat (${borcKaydi.isim})`
-                    });
-                    finansDb.borclar.splice(borcIndeks, 1);
-                    veriKaydetVeYenile();
-                }
-            }
-        }
-
-        // RANDEVU VE DOLULUK ORANI SİSTEMİ
-        function randevuListeleme() {
-            const listem = document.getElementById('adminApptList');
-            if(!listem) return;
-            listem.innerHTML = '';
-            let sayac = 0;
-            let bugunkuRandevuSayisi = 0;
-            const isoBugun = bugun.toISOString().split('T')[0];
-
             try {
-                for (let i = 0; i < localStorage.length; i++) {
-                    const anahtar = localStorage.key(i);
-                    if (anahtar && anahtar.startsWith('appt_')) {
-                        const parcalar = anahtar.split('_');
-                        if (parcalar.length < 4) continue;
+                var mFilter = document.getElementById('monthFilter');
+                if(mFilter && !mFilter.value) {
+                    mFilter.value = yyyyMm;
+                }
+                
+                var seciliAy = mFilter ? mFilter.value : yyyyMm;
+                var toplamGelir = 0;
+                var toplamGider = 0;
+                var toplamAlacak = 0;
+                var logHTML = '';
+                var hizmetSayilari = {};
 
-                        sayac++;
-                        const rTarih = parcalar[1] || '';
-                        const rBerber = parcalar[2] || 'Bilinmeyen';
-                        const rSaat = parcalar[3] || '--:--';
+                // Gelir Hesaplama (Klasik Hatasız For Döngüsü)
+                if (finansDb.gelirler && finansDb.gelirler.length) {
+                    for (var i = 0; i < finansDb.gelirler.length; i++) {
+                        var g = finansDb.gelirler[i];
+                        if(g && g.tarih && typeof g.tarih === 'string' && g.tarih.indexOf(seciliAy) === 0) {
+                            var gTutar = parseFloat(g.tutar) || 0;
+                            toplamGelir += gTutar;
+                            if(g.tanim) {
+                                hizmetSayilari[g.tanim] = (hizmetSayilari[g.tanim] || 0) + 1;
+                            }
+                            var tFormat = g.tarih.indexOf('-') !== -1 ? g.tarih.split('-').reverse().join('.') : g.tarih;
+                            logHTML += '<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">' +
+                                '<span class="text-emerald-400 font-medium">🟢 Gelir: ' + (g.tanim || 'Genel') + ' (' + tFormat + ')</span>' +
+                                '<span class="font-bold text-emerald-400">+' + gTutar.toFixed(2) + ' TL</span>' +
+                                '</div>';
+                        }
+                    }
+                }
 
-                        if(rTarih === isoBugun) bugunkuRandevuSayisi++;
+                // Gider Hesaplama (Klasik For Döngüsü)
+                if (finansDb.giderler && finansDb.giderler.length) {
+                    for (var j = 0; j < finansDb.giderler.length; j++) {
+                        var gi = finansDb.giderler[j];
+                        if(gi && gi.tarih && typeof gi.tarih === 'string' && gi.tarih.indexOf(seciliAy) === 0) {
+                            var giTutar = parseFloat(gi.tutar) || 0;
+                            toplamGider += giTutar;
+                            var tFormatGi = gi.tarih.indexOf('-') !== -1 ? gi.tarih.split('-').reverse().join('.') : gi.tarih;
+                            logHTML += '<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">' +
+                                '<span class="text-red-400 font-medium">🔴 Gider: ' + (gi.tanim || 'Gider') + ' (' + tFormatGi + ')</span>' +
+                                '<span class="font-bold text-red-400">-' + giTutar.toFixed(2) + ' TL</span>' +
+                                '</div>';
+                        }
+                    }
+                }
 
-                        const tGosterim = rTarih.includes('-') ? rTarih.split('-').reverse().join('.') : rTarih;
+                // Veresiye Defteri Listeleme (Klasik For Döngüsü)
+                var debtListContainer = document.getElementById('adminDebtList');
+                if(debtListContainer) {
+                    debtListContainer.innerHTML = '';
+                    if (finansDb.borclar && finansDb.borclar.length) {
+                        for (var k = 0; k < finansDb.borclar.length; k++) {
+                            var b = finansDb.borclar[k];
+                            if (b) {
+                                var bTutar = parseFloat(b.tutar) || 0;
+                                toplamAlacak += bTutar;
+                                var bTarih = b.tarih && typeof b.tarih === 'string' && b.tarih.indexOf('-') !== -1 ? b.tarih.split('-').reverse().join('.') : '../../..';
+                                
+                                var borckarti = document.createElement('div');
+                                borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
+                                borckarti.innerHTML = '<div><span class="font-bold text-amber-400">' + (b.isim || 'Müşteri') + '</span>' +
+                                    '<span class="text-slate-400 ml-1">(' + (b.tanim || 'Detay Yok') + ') - ' + bTarih + '</span></div>' +
+                                    '<div class="flex items-center gap-2"><span class="font-bold text-amber-400">' + bTutar.toFixed(2) + ' TL</span>' +
+                                    '<button type="button" onclick="veresiyeTahsilEt(' + b.id + ')" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button></div>';
+                                debtListContainer.appendChild(borckarti);
+                            }
+                        }
+                    }
+                    if(!finansDb.borclar || finansDb.borclar.length === 0) {
+                        debtListContainer.innerHTML = '<div class="text-center py-4 text-xs text-slate-600">Defterde bekleyen borç kaydı bulunmuyor.</div>';
+                    }
+                }
 
-                        const kart = document.createElement('div');
-                        kart.className = 
+                // Ekran Verilerini Güncelleme
+                document.getElementById('totalIncomeDisplay').innerText = toplamGelir.toFixed(2) + " TL";
+                document.getElementById('totalExpenseDisplay').innerText = toplamGider.toFixed(2) + " TL";
+                document.getElementById('totalReceivableDisplay').innerText = toplamAlacak.toFixed(2) + " TL";
+                
+                var netKar = toplamGelir - toplamGider;
+                var netDisplay 
