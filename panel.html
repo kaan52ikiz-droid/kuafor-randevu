@@ -2,111 +2,346 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dükkan Yönetim - Kesin Çözüm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuaför Yönetici Paneli</title>
+    <!-- Modern Tasarım için Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF Alma Özelliği için html2pdf Kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+    </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen">
+<body>
 
-    <div id="loginOverlay" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm text-center">
-            <h2 class="text-xl font-bold mb-6">Yönetici Girişi</h2>
-            <input type="password" id="passInput" placeholder="Şifre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center mb-4 outline-none focus:border-indigo-500">
-            <button onclick="girisKontrol()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold hover:bg-indigo-700">Giriş Yap</button>
-            <p id="loginError" class="text-rose-500 text-xs mt-4 hidden">Hatalı Şifre!</p>
+    <!-- GİRİŞ EKRANI -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center bg-gray-900">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-96 text-center">
+            <h1 class="text-2xl font-bold mb-4 text-gray-800">Yönetici Girişi</h1>
+            <input type="password" id="passwordInput" placeholder="Şifrenizi Girin" class="w-full p-3 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
+            <button onclick="checkPassword()" class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">Giriş Yap</button>
+            <p id="loginError" class="text-red-500 mt-3 hidden font-semibold">Hatalı Şifre!</p>
         </div>
     </div>
 
-    <div id="mainContent" class="hidden max-w-lg mx-auto p-4 space-y-4">
-        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
-            <input type="month" id="monthFilter" onchange="ekraniGuncelle()" class="bg-slate-950 p-2 rounded text-indigo-400 border border-slate-700 outline-none">
-            <button onclick="location.reload()" class="text-xs text-slate-500">Çıkış</button>
+    <!-- YÖNETİCİ PANELİ (Başlangıçta Gizli) -->
+    <div id="adminPanel" class="hidden min-h-screen bg-gray-100 p-6">
+        
+        <div class="max-w-6xl mx-auto" id="pdfContent">
+            <!-- Üst Başlık -->
+            <div class="flex justify-between items-center bg-white p-5 rounded-lg shadow mb-6">
+                <h1 class="text-2xl font-extrabold text-gray-800">✂️ Acon Shop Kuaför - Yönetim Paneli</h1>
+                <div class="text-gray-500 font-medium" id="currentDateDisplay"></div>
+            </div>
+
+            <!-- Özet Kartları -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-green-500 text-white p-5 rounded-lg shadow">
+                    <h3 class="text-sm font-bold uppercase opacity-80">Bugünkü Ciro (Gelir)</h3>
+                    <p class="text-3xl font-extrabold mt-2" id="dailyIncome">0 ₺</p>
+                </div>
+                <div class="bg-red-500 text-white p-5 rounded-lg shadow">
+                    <h3 class="text-sm font-bold uppercase opacity-80">Bugünkü Gider (Zarar)</h3>
+                    <p class="text-3xl font-extrabold mt-2" id="dailyExpense">0 ₺</p>
+                </div>
+                <div class="bg-blue-600 text-white p-5 rounded-lg shadow">
+                    <h3 class="text-sm font-bold uppercase opacity-80">Günlük Net Kâr</h3>
+                    <p class="text-3xl font-extrabold mt-2" id="dailyProfit">0 ₺</p>
+                </div>
+                <div class="bg-purple-600 text-white p-5 rounded-lg shadow">
+                    <h3 class="text-sm font-bold uppercase opacity-80">Aylık Toplam Ciro</h3>
+                    <p class="text-3xl font-extrabold mt-2" id="monthlyIncome">0 ₺</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Gelir / Randevu Ekleme Formu -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-lg font-bold border-b pb-2 mb-4 text-gray-700">💰 Yeni Gelir (İşlem) Ekle</h2>
+                    <select id="staffSelect" class="w-full p-2 border rounded mb-3">
+                        <option value="Kaan Usta">Kaan Usta</option>
+                        <option value="Kerem Kalfa">Kerem Kalfa</option>
+                        <option value="Taha Kalfa">Taha Kalfa</option>
+                    </select>
+                    <select id="serviceSelect" class="w-full p-2 border rounded mb-3">
+                        <option value="sac">Saç Kesimi</option>
+                        <option value="sakal">Sakal Kesimi</option>
+                        <option value="sac_sakal">Saç & Sakal</option>
+                        <option value="diger">Diğer / Özel İşlem</option>
+                    </select>
+                    <button onclick="addIncome()" class="w-full bg-green-500 text-white p-2 rounded font-bold hover:bg-green-600">Geliri Kaydet</button>
+                    
+                    <!-- Personel Ciroları -->
+                    <h3 class="text-md font-bold mt-6 mb-2 text-gray-700">Günlük Personel Cirosu</h3>
+                    <ul id="staffDailyStats" class="text-sm space-y-2"></ul>
+                </div>
+
+                <!-- Gider Ekleme Formu & Fiyatlar -->
+                <div class="flex flex-col gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-bold border-b pb-2 mb-4 text-gray-700">📉 Yeni Gider Ekle</h2>
+                        <input type="text" id="expenseDesc" placeholder="Gider Açıklaması (Örn: Elektrik, Şampuan)" class="w-full p-2 border rounded mb-3">
+                        <input type="number" id="expenseAmount" placeholder="Tutar (₺)" class="w-full p-2 border rounded mb-3">
+                        <button onclick="addExpense()" class="w-full bg-red-500 text-white p-2 rounded font-bold hover:bg-red-600">Gideri Kaydet</button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-bold border-b pb-2 mb-4 text-gray-700">⚙️ Hizmet Fiyatlarını Güncelle</h2>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm">Saç Kesimi (₺):</span>
+                            <input type="number" id="priceSac" class="w-20 p-1 border rounded text-right">
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm">Sakal Kesimi (₺):</span>
+                            <input type="number" id="priceSakal" class="w-20 p-1 border rounded text-right">
+                        </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm">Saç & Sakal (₺):</span>
+                            <input type="number" id="priceSacSakal" class="w-20 p-1 border rounded text-right">
+                        </div>
+                        <button onclick="updatePrices()" class="w-full bg-gray-700 text-white p-2 rounded font-bold hover:bg-gray-800">Fiyatları Kaydet</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Günlük Liste -->
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <h2 class="text-lg font-bold border-b pb-2 mb-4 text-gray-700">📅 Bugünkü İşlemler ve Giderler Dökümü</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 text-sm">
+                                <th class="p-3 border-b">Saat</th>
+                                <th class="p-3 border-b">Tür</th>
+                                <th class="p-3 border-b">Açıklama / Personel</th>
+                                <th class="p-3 border-b text-right">Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dailyListBody" class="text-sm">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-            <div class="bg-slate-900 p-3 rounded-xl border border-emerald-900 text-center">
-                <p class="text-[9px] text-emerald-500 uppercase">Gelir</p>
-                <p id="dispGelir" class="font-bold text-sm">0.00</p>
-            </div>
-            <div class="bg-slate-900 p-3 rounded-xl border border-rose-900 text-center">
-                <p class="text-[9px] text-rose-500 uppercase">Gider</p>
-                <p id="dispGider" class="font-bold text-sm">0.00</p>
-            </div>
-            <div class="bg-slate-900 p-3 rounded-xl border border-blue-900 text-center">
-                <p class="text-[9px] text-blue-500 uppercase">Net</p>
-                <p id="dispNet" class="font-bold text-sm">0.00</p>
-            </div>
+        <!-- Dışa Aktarma Butonları -->
+        <div class="max-w-6xl mx-auto flex gap-4 pb-10">
+            <button onclick="exportToPDF()" class="flex-1 bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700 shadow flex justify-center items-center gap-2">
+                📄 Raporu PDF İndir
+            </button>
+            <button onclick="copyToClipboard()" class="flex-1 bg-teal-600 text-white p-3 rounded-lg font-bold hover:bg-teal-700 shadow flex justify-center items-center gap-2">
+                📋 Günlük Özeti Kopyala
+            </button>
         </div>
 
-        <div class="bg-slate-900 p-4 rounded-xl space-y-3 border border-slate-800">
-            <input type="number" id="inpTutar" placeholder="Tutar (TL)" class="w-full bg-slate-950 p-2 rounded border border-slate-700 outline-none">
-            <input type="text" id="inpAciklama" placeholder="Açıklama" class="w-full bg-slate-950 p-2 rounded border border-slate-700 outline-none">
-            <div class="flex gap-2">
-                <button onclick="kayitEkle('gelir')" class="w-1/2 bg-emerald-600 py-2 rounded font-bold">Gelir +</button>
-                <button onclick="kayitEkle('gider')" class="w-1/2 bg-rose-600 py-2 rounded font-bold">Gider -</button>
-            </div>
-        </div>
-
-        <div id="liste" class="space-y-2"></div>
     </div>
 
+    <!-- JAVASCRIPT KODLARI -->
     <script>
-        // ŞİFRE VE VERİ İŞLEMLERİ
-        function girisKontrol() {
-            if (document.getElementById('passInput').value === "5252") {
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                document.getElementById('monthFilter').value = new Date().toISOString().slice(0, 7);
-                ekraniGuncelle();
+        // Veri Yapısı Başlatma
+        let data = JSON.parse(localStorage.getItem('kuafor_data')) || {
+            prices: { sac: 150, sakal: 80, sac_sakal: 200, diger: 100 },
+            records: [] // { id, type: 'income'|'expense', amount, desc, staff, date, time }
+        };
+
+        // Giriş Yapma Fonksiyonu
+        function checkPassword() {
+            const pass = document.getElementById("passwordInput").value;
+            if (pass === "5252") {
+                document.getElementById("loginSection").style.display = "none";
+                document.getElementById("adminPanel").style.display = "block";
+                initPanel();
             } else {
-                document.getElementById('loginError').classList.remove('hidden');
+                document.getElementById("loginError").style.display = "block";
             }
         }
 
-        function kayitEkle(tur) {
-            let tutar = parseFloat(document.getElementById('inpTutar').value);
-            let aciklama = document.getElementById('inpTutar').value.trim();
-            let ay = document.getElementById('monthFilter').value;
+        // Paneli Başlatma ve Verileri Ekrana Yazdırma
+        function initPanel() {
+            // Tarihi Göster
+            const todayOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById("currentDateDisplay").innerText = new Date().toLocaleDateString('tr-TR', todayOptions);
 
-            if (!tutar || !ay) return alert("Tutar ve Ay seçimi zorunludur.");
-            
-            let kayit = { 
-                id: Date.now(), 
-                tarih: ay, 
-                tutar: tutar, 
-                aciklama: document.getElementById('inpAciklama').value || "İşlem", 
-                tur: tur 
-            };
+            // Fiyatları inputlara doldur
+            document.getElementById("priceSac").value = data.prices.sac;
+            document.getElementById("priceSakal").value = data.prices.sakal;
+            document.getElementById("priceSacSakal").value = data.prices.sac_sakal;
 
-            let db = JSON.parse(localStorage.getItem('dukkan_db') || '[]');
-            db.push(kayit);
-            localStorage.setItem('dukkan_db', JSON.stringify(db));
-            
-            ekraniGuncelle();
+            calculateStats();
+            renderList();
         }
 
-        function ekraniGuncelle() {
-            let ay = document.getElementById('monthFilter').value;
-            let db = JSON.parse(localStorage.getItem('dukkan_db') || '[]');
-            let gelir = 0, gider = 0, html = '';
+        // Hesaplamalar
+        function calculateStats() {
+            const todayDate = new Date().toISOString().split('T')[0];
+            const currentMonth = todayDate.substring(0, 7); // YYYY-MM
 
-            db.forEach(item => {
-                if(item.tarih === ay) {
-                    if(item.tur === 'gelir') gelir += item.tutar;
-                    else gider += item.tutar;
-                    
-                    html += `<div class="bg-slate-900 p-2 rounded flex justify-between text-xs border border-slate-800">
-                        <span>${item.aciklama}</span>
-                        <span class="${item.tur === 'gelir' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
-                            ${item.tur === 'gelir' ? '+' : '-'}${item.tutar} TL
-                        </span>
-                    </div>`;
+            let dailyIncome = 0;
+            let dailyExpense = 0;
+            let monthlyIncome = 0;
+            
+            let staffIncome = { "Kaan Usta": 0, "Kerem Kalfa": 0, "Taha Kalfa": 0 };
+
+            data.records.forEach(record => {
+                const isToday = record.date === todayDate;
+                const isThisMonth = record.date.startsWith(currentMonth);
+
+                if (record.type === 'income') {
+                    if (isToday) {
+                        dailyIncome += record.amount;
+                        if(staffIncome[record.staff] !== undefined) staffIncome[record.staff] += record.amount;
+                    }
+                    if (isThisMonth) {
+                        monthlyIncome += record.amount;
+                    }
+                } else if (record.type === 'expense' && isToday) {
+                    dailyExpense += record.amount;
                 }
             });
 
-            document.getElementById('dispGelir').innerText = gelir.toFixed(2);
-            document.getElementById('dispGider').innerText = gider.toFixed(2);
-            document.getElementById('dispNet').innerText = (gelir - gider).toFixed(2);
-            document.getElementById('liste').innerHTML = html;
+            const dailyProfit = dailyIncome - dailyExpense;
+
+            document.getElementById("dailyIncome").innerText = dailyIncome + " ₺";
+            document.getElementById("dailyExpense").innerText = dailyExpense + " ₺";
+            document.getElementById("dailyProfit").innerText = dailyProfit + " ₺";
+            document.getElementById("monthlyIncome").innerText = monthlyIncome + " ₺";
+
+            // Personel cirolarını ekrana bas
+            const staffListEl = document.getElementById("staffDailyStats");
+            staffListEl.innerHTML = `
+                <li class="flex justify-between border-b py-1"><span>Kaan Usta:</span> <b>${staffIncome["Kaan Usta"]} ₺</b></li>
+                <li class="flex justify-between border-b py-1"><span>Kerem Kalfa:</span> <b>${staffIncome["Kerem Kalfa"]} ₺</b></li>
+                <li class="flex justify-between border-b py-1"><span>Taha Kalfa:</span> <b>${staffIncome["Taha Kalfa"]} ₺</b></li>
+            `;
+        }
+
+        // Listeyi Çizdirme
+        function renderList() {
+            const todayDate = new Date().toISOString().split('T')[0];
+            const listBody = document.getElementById("dailyListBody");
+            listBody.innerHTML = "";
+
+            const todaysRecords = data.records.filter(r => r.date === todayDate);
+            
+            if(todaysRecords.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500">Bugün henüz kayıt yok.</td></tr>`;
+                return;
+            }
+
+            todaysRecords.forEach(record => {
+                const tr = document.createElement("tr");
+                tr.className = "border-b hover:bg-gray-50 transition";
+                
+                let typeBadge = record.type === 'income' 
+                    ? `<span class="bg-green-100 text-green-700 py-1 px-2 rounded text-xs font-bold">GELİR</span>`
+                    : `<span class="bg-red-100 text-red-700 py-1 px-2 rounded text-xs font-bold">GİDER</span>`;
+                
+                let desc = record.type === 'income' ? `${record.desc} (${record.staff})` : record.desc;
+                let amountColor = record.type === 'income' ? 'text-green-600' : 'text-red-600';
+                let amountSign = record.type === 'income' ? '+' : '-';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-gray-500">${record.time}</td>
+                    <td class="p-3">${typeBadge}</td>
+                    <td class="p-3 font-medium">${desc}</td>
+                    <td class="p-3 text-right font-bold ${amountColor}">${amountSign}${record.amount} ₺</td>
+                `;
+                listBody.appendChild(tr);
+            });
+        }
+
+        // Gelir Ekleme
+        function addIncome() {
+            const staff = document.getElementById("staffSelect").value;
+            const service = document.getElementById("serviceSelect").value;
+            const amount = data.prices[service] || 0;
+            
+            let serviceName = document.getElementById("serviceSelect").options[document.getElementById("serviceSelect").selectedIndex].text;
+
+            const now = new Date();
+            data.records.push({
+                id: Date.now(),
+                type: 'income',
+                amount: parseInt(amount),
+                desc: serviceName,
+                staff: staff,
+                date: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            saveData();
+        }
+
+        // Gider Ekleme
+        function addExpense() {
+            const desc = document.getElementById("expenseDesc").value;
+            const amount = document.getElementById("expenseAmount").value;
+
+            if (!desc || !amount) {
+                alert("Lütfen gider açıklaması ve tutar girin.");
+                return;
+            }
+
+            const now = new Date();
+            data.records.push({
+                id: Date.now(),
+                type: 'expense',
+                amount: parseInt(amount),
+                desc: desc,
+                staff: null,
+                date: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            document.getElementById("expenseDesc").value = "";
+            document.getElementById("expenseAmount").value = "";
+            saveData();
+        }
+
+        // Fiyatları Güncelleme
+        function updatePrices() {
+            data.prices.sac = parseInt(document.getElementById("priceSac").value) || 0;
+            data.prices.sakal = parseInt(document.getElementById("priceSakal").value) || 0;
+            data.prices.sac_sakal = parseInt(document.getElementById("priceSacSakal").value) || 0;
+            saveData();
+            alert("Fiyatlar başarıyla güncellendi.");
+        }
+
+        // Veriyi Kaydet ve Ekranı Yenile
+        function saveData() {
+            localStorage.setItem('kuafor_data', JSON.stringify(data));
+            calculateStats();
+            renderList();
+        }
+
+        // PDF Çıktısı Alma
+        function exportToPDF() {
+            const element = document.getElementById('pdfContent');
+            const opt = {
+                margin:       0.5,
+                filename:     'Gunluk_Ozet.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Metin Olarak Kopyalama
+        function copyToClipboard() {
+            const income = document.getElementById("dailyIncome").innerText;
+            const expense = document.getElementById("dailyExpense").innerText;
+            const profit = document.getElementById("dailyProfit").innerText;
+            const date = document.getElementById("currentDateDisplay").innerText;
+
+            const text = `Acon Shop Kuaför - ${date} Özeti\nGelir: ${income}\nGider: ${expense}\nNet Kâr: ${profit}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Günlük özet başarıyla kopyalandı!");
+            }).catch(err => {
+                alert("Kopyalama başarısız oldu.");
+            });
         }
     </script>
 </body>
