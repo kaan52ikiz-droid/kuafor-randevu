@@ -3,136 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuaför Yönetim Paneli V2</title>
+    <title>Kuaför Yönetim Paneli V3 - Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f8fafc; }
-        /* Scrollbar tasarımı */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0; /* Slate 200 */
+        }
+        /* Scrollbar tasarımı - Dark Mode */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        /* Glass efekti */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Input otomatik tamamlama arka planını düzeltme */
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+            -webkit-text-fill-color: white !important;
+        }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="antialiased selection:bg-indigo-500 selection:text-white">
 
-    <div id="loginSection" class="min-h-screen flex items-center justify-center bg-slate-900 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 opacity-50"></div>
-        <div class="bg-white/10 backdrop-blur-lg p-10 rounded-2xl shadow-2xl w-full max-w-sm text-center relative z-10 border border-white/20">
-            <h1 class="text-3xl font-extrabold mb-6 text-white tracking-tight">Yönetici Girişi</h1>
-            <input type="password" id="passwordInput" placeholder="Şifrenizi Girin" class="w-full p-4 bg-white/20 border border-white/30 rounded-xl mb-6 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl tracking-widest transition">
-            <button onclick="checkPassword()" class="w-full bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-xl font-bold transition shadow-lg text-lg">Sisteme Gir</button>
-            <p id="loginError" class="text-red-400 mt-4 hidden font-medium bg-red-900/50 p-2 rounded">Hatalı Şifre!</p>
+    <div id="loginSection" class="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-50"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-emerald-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-50"></div>
+        
+        <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center relative z-10">
+            <div class="text-5xl mb-4">✂️</div>
+            <h1 class="text-3xl font-extrabold mb-8 text-white tracking-wide">Acon Shop<br><span class="text-indigo-400 text-lg font-normal">Yönetici Girişi</span></h1>
+            <input type="password" id="passwordInput" placeholder="Şifrenizi Girin" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-6 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-center text-2xl tracking-widest transition">
+            <button onclick="checkPassword()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-xl font-bold transition shadow-[0_0_15px_rgba(79,70,229,0.5)] text-lg tracking-wide">Sisteme Gir</button>
+            <p id="loginError" class="text-rose-400 mt-4 hidden font-medium bg-rose-950/50 p-2 rounded-lg border border-rose-900/50">Hatalı Şifre!</p>
         </div>
     </div>
 
-    <div id="adminPanel" class="hidden min-h-screen p-4 md:p-8">
-        
-        <div class="max-w-7xl mx-auto" id="pdfContent">
+    <div id="adminPanel" class="hidden min-h-screen p-4 md:p-8 relative">
+        <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none z-0">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-900/20 rounded-full filter blur-[100px]"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-900/10 rounded-full filter blur-[100px]"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto relative z-10" id="pdfContent">
             
-            <div class="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                <div class="flex items-center gap-4 mb-4 md:mb-0">
-                    <span class="text-4xl">✂️</span>
+            <div class="flex flex-col md:flex-row justify-between items-center glass-panel p-6 rounded-3xl mb-8 shadow-lg">
+                <div class="flex items-center gap-5 mb-4 md:mb-0">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg">✂️</div>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-800">Acon Shop Kuaför</h1>
-                        <p class="text-sm text-slate-500 font-medium">Gelişmiş Yönetim Paneli</p>
+                        <h1 class="text-3xl font-extrabold text-white tracking-tight">Acon Shop</h1>
+                        <p class="text-sm text-indigo-300 font-medium tracking-wide uppercase">Premium Yönetim Paneli</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-inner">
-                    <label for="datePicker" class="font-semibold text-slate-600">📅 Tarih Seç:</label>
-                    <input type="date" id="datePicker" onchange="handleDateChange()" class="p-2 border border-slate-300 rounded-lg bg-white text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <div class="flex items-center gap-4 bg-slate-900/50 p-2 pl-4 rounded-2xl border border-slate-700">
+                    <label for="datePicker" class="font-semibold text-slate-300">📅 Tarih:</label>
+                    <input type="date" id="datePicker" onchange="handleDateChange()" class="p-3 bg-slate-800 border-none rounded-xl text-white font-bold focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer">
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-                <div class="bg-gradient-to-br from-emerald-400 to-emerald-600 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <h3 class="text-sm font-bold uppercase tracking-wider opacity-90">Seçili Gün Geliri</h3>
-                    <p class="text-4xl font-black mt-3" id="dailyIncome">0 ₺</p>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-8">
+                <div class="glass-panel p-6 rounded-3xl border-t border-t-emerald-500/30 relative overflow-hidden group hover:border-emerald-500/50 transition">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full -z-10 group-hover:scale-110 transition"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">Günlük Gelir</h3>
+                    <p class="text-4xl font-black text-white" id="dailyIncome">0 ₺</p>
                 </div>
-                <div class="bg-gradient-to-br from-rose-400 to-rose-600 text-white p-6 rounded-2xl shadow-lg">
-                    <h3 class="text-sm font-bold uppercase tracking-wider opacity-90">Seçili Gün Gideri</h3>
-                    <p class="text-4xl font-black mt-3" id="dailyExpense">0 ₺</p>
+                <div class="glass-panel p-6 rounded-3xl border-t border-t-rose-500/30 relative overflow-hidden group hover:border-rose-500/50 transition">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-bl-full -z-10 group-hover:scale-110 transition"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-rose-400 mb-2">Günlük Gider</h3>
+                    <p class="text-4xl font-black text-white" id="dailyExpense">0 ₺</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg">
-                    <h3 class="text-sm font-bold uppercase tracking-wider opacity-90">Seçili Gün Net Kâr</h3>
-                    <p class="text-4xl font-black mt-3" id="dailyProfit">0 ₺</p>
+                <div class="glass-panel p-6 rounded-3xl border-t border-t-blue-500/30 relative overflow-hidden group hover:border-blue-500/50 transition">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-bl-full -z-10 group-hover:scale-110 transition"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">Net Kâr</h3>
+                    <p class="text-4xl font-black text-white" id="dailyProfit">0 ₺</p>
                 </div>
-                <div class="bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white p-6 rounded-2xl shadow-lg">
-                    <h3 class="text-sm font-bold uppercase tracking-wider opacity-90">Bu Ayki Ciro</h3>
-                    <p class="text-4xl font-black mt-3" id="monthlyIncome">0 ₺</p>
+                <div class="glass-panel p-6 rounded-3xl border-t border-t-purple-500/30 relative overflow-hidden group hover:border-purple-500/50 transition">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-bl-full -z-10 group-hover:scale-110 transition"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-purple-400 mb-2">Aylık Ciro</h3>
+                    <p class="text-4xl font-black text-white" id="monthlyIncome">0 ₺</p>
                 </div>
-                <div class="bg-gradient-to-br from-amber-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
-                    <h3 class="text-sm font-bold uppercase tracking-wider opacity-90">Toplam Alacak (Veresiye)</h3>
-                    <p class="text-4xl font-black mt-3" id="totalDebt">0 ₺</p>
+                <div class="glass-panel p-6 rounded-3xl border-t border-t-amber-500/30 relative overflow-hidden group hover:border-amber-500/50 transition">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-bl-full -z-10 group-hover:scale-110 transition"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400 mb-2">Toplam Alacak</h3>
+                    <p class="text-4xl font-black text-white" id="totalDebt">0 ₺</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-xl font-black text-emerald-600 mb-5 flex items-center gap-2">💰 İşlem (Gelir) Ekle</h2>
+                <div class="glass-panel p-6 rounded-3xl">
+                    <h2 class="text-xl font-bold text-emerald-400 mb-6 flex items-center gap-3"><span class="bg-emerald-500/20 p-2 rounded-lg">💰</span> Gelir İşlemi</h2>
                     
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Personel Seç</label>
-                    <select id="staffSelect" class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                    <label class="text-xs font-semibold text-slate-400 uppercase mb-2 block tracking-wider">Personel</label>
+                    <select id="staffSelect" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-5 text-white focus:border-emerald-500 outline-none transition">
                         <option value="Kaan Usta">Kaan Usta</option>
                         <option value="Kerem Kalfa">Kerem Kalfa</option>
                         <option value="Taha Kalfa">Taha Kalfa</option>
                     </select>
 
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">İşlem Türü</label>
-                    <input type="text" id="serviceDesc" placeholder="Örn: Saç Kesimi, Cilt Bakımı..." class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                    <label class="text-xs font-semibold text-slate-400 uppercase mb-2 block tracking-wider">İşlem Türü</label>
+                    <input type="text" id="serviceDesc" placeholder="Örn: Saç & Sakal" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-5 text-white placeholder-slate-600 focus:border-emerald-500 outline-none transition">
 
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Alınan Ücret (TL)</label>
-                    <input type="number" id="incomeAmount" placeholder="Manuel Tutar Girin (Örn: 75)" class="w-full p-3 border border-slate-300 rounded-xl mb-6 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition font-bold text-lg">
+                    <label class="text-xs font-semibold text-slate-400 uppercase mb-2 block tracking-wider">Tutar (TL)</label>
+                    <input type="number" id="incomeAmount" placeholder="Örn: 150" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-6 text-white placeholder-slate-600 focus:border-emerald-500 outline-none transition font-bold text-xl">
                     
-                    <button onclick="addIncome()" class="w-full bg-emerald-500 text-white p-4 rounded-xl font-bold hover:bg-emerald-600 transition shadow-md text-lg">Kasa Geliri Olarak Kaydet</button>
+                    <button onclick="addIncome()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-4 rounded-xl font-bold transition shadow-[0_0_15px_rgba(16,185,129,0.3)] text-lg">Kasaya Ekle</button>
 
-                    <div class="mt-8 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="text-sm font-black text-slate-700 mb-3 uppercase tracking-wide">Seçili Gün Personel Ciroları</h3>
+                    <div class="mt-8 bg-slate-900/50 p-5 rounded-2xl border border-slate-800">
+                        <h3 class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest">Günlük Personel Ciroları</h3>
                         <ul id="staffDailyStats" class="space-y-3"></ul>
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h2 class="text-xl font-black text-rose-600 mb-5 flex items-center gap-2">📉 Gider Ekle</h2>
-                        <input type="text" id="expenseDesc" placeholder="Gider Açıklaması (Örn: Fatura, Kahve)" class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50">
-                        <input type="number" id="expenseAmount" placeholder="Tutar (TL)" class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50 font-bold text-lg">
-                        <button onclick="addExpense()" class="w-full bg-rose-500 text-white p-3 rounded-xl font-bold hover:bg-rose-600 transition shadow-md">Gideri Kaydet</button>
+                <div class="flex flex-col gap-6">
+                    <div class="glass-panel p-6 rounded-3xl">
+                        <h2 class="text-xl font-bold text-rose-400 mb-6 flex items-center gap-3"><span class="bg-rose-500/20 p-2 rounded-lg">📉</span> Gider Çıkışı</h2>
+                        <input type="text" id="expenseDesc" placeholder="Nereye harcandı? (Örn: Malzeme)" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-4 text-white placeholder-slate-600 focus:border-rose-500 outline-none">
+                        <input type="number" id="expenseAmount" placeholder="Tutar (TL)" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-5 text-white placeholder-slate-600 focus:border-rose-500 outline-none font-bold text-xl">
+                        <button onclick="addExpense()" class="w-full bg-rose-600 hover:bg-rose-500 text-white p-4 rounded-xl font-bold transition shadow-[0_0_15px_rgba(225,29,72,0.3)]">Gider Ekle</button>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500">
-                        <h2 class="text-xl font-black text-amber-600 mb-5 flex items-center gap-2">✍️ Veresiye Yaz</h2>
-                        <input type="text" id="debtCustomer" placeholder="Müşteri Adı Soyadı" class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50">
-                        <input type="number" id="debtAmount" placeholder="Borç Tutarı (TL)" class="w-full p-3 border border-slate-300 rounded-xl mb-4 bg-slate-50 font-bold text-lg">
-                        <button onclick="addDebt()" class="w-full bg-amber-500 text-white p-3 rounded-xl font-bold hover:bg-amber-600 transition shadow-md">Deftere Yaz</button>
+                    <div class="glass-panel p-6 rounded-3xl border border-amber-500/20">
+                        <h2 class="text-xl font-bold text-amber-400 mb-6 flex items-center gap-3"><span class="bg-amber-500/20 p-2 rounded-lg">✍️</span> Veresiye Defteri</h2>
+                        <input type="text" id="debtCustomer" placeholder="Müşteri Adı" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-4 text-white placeholder-slate-600 focus:border-amber-500 outline-none">
+                        <input type="number" id="debtAmount" placeholder="Borç Tutarı (TL)" class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl mb-5 text-white placeholder-slate-600 focus:border-amber-500 outline-none font-bold text-xl">
+                        <button onclick="addDebt()" class="w-full bg-amber-600 hover:bg-amber-500 text-white p-4 rounded-xl font-bold transition shadow-[0_0_15px_rgba(217,119,6,0.3)]">Deftere Yaz</button>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
-                    <h2 class="text-xl font-black text-slate-700 mb-5 flex items-center gap-2">📖 Veresiye Defteri (Ödenmeyenler)</h2>
-                    <div class="flex-1 overflow-y-auto pr-2" style="max-height: 500px;">
-                        <ul id="debtList" class="space-y-3">
+                <div class="glass-panel p-6 rounded-3xl flex flex-col h-full">
+                    <h2 class="text-xl font-bold text-slate-200 mb-6 flex items-center gap-3"><span class="bg-slate-700 p-2 rounded-lg">📖</span> Açık Veresiyeler</h2>
+                    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar" style="max-height: 550px;">
+                        <ul id="debtList" class="space-y-4">
                             </ul>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                <h2 class="text-xl font-black text-slate-700 mb-5">📋 Seçili Günün İşlem Dökümü</h2>
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table class="w-full text-left border-collapse bg-white">
+            <div class="glass-panel p-6 rounded-3xl mb-8">
+                <h2 class="text-xl font-bold text-slate-200 mb-6 flex items-center gap-3"><span class="bg-slate-700 p-2 rounded-lg">📋</span> Günlük İşlem Dökümü</h2>
+                <div class="overflow-x-auto rounded-2xl border border-slate-700">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-100 text-slate-600 text-sm uppercase tracking-wide">
-                                <th class="p-4 font-bold border-b">Saat</th>
-                                <th class="p-4 font-bold border-b">Tür</th>
-                                <th class="p-4 font-bold border-b">Açıklama / Personel</th>
-                                <th class="p-4 font-bold border-b text-right">Tutar</th>
-                                <th class="p-4 font-bold border-b text-center">İşlem</th>
+                            <tr class="bg-slate-800 text-slate-400 text-xs uppercase tracking-widest">
+                                <th class="p-5 font-bold border-b border-slate-700">Saat</th>
+                                <th class="p-5 font-bold border-b border-slate-700">Tür</th>
+                                <th class="p-5 font-bold border-b border-slate-700">Açıklama / Personel</th>
+                                <th class="p-5 font-bold border-b border-slate-700 text-right">Tutar</th>
+                                <th class="p-5 font-bold border-b border-slate-700 text-center">İşlem</th>
                             </tr>
                         </thead>
-                        <tbody id="dailyListBody" class="text-slate-700 font-medium">
+                        <tbody id="dailyListBody" class="text-slate-300 font-medium">
                             </tbody>
                     </table>
                 </div>
@@ -140,16 +170,16 @@
         </div>
 
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 pb-12">
-            <button onclick="exportToPDF()" class="flex-1 bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-slate-900 shadow-lg flex justify-center items-center gap-3 transition text-lg">
-                📄 Bu Sayfayı PDF İndir
+            <button onclick="exportToPDF()" class="flex-1 bg-indigo-600/80 hover:bg-indigo-500 border border-indigo-500/50 text-white p-5 rounded-2xl font-bold shadow-lg flex justify-center items-center gap-3 transition text-lg tracking-wide">
+                📄 Bu Sayfayı PDF Olarak İndir
             </button>
         </div>
 
     </div>
 
     <script>
-        // Veritabanı Yapısı (Eski versiyonla karışmaması için kuafor_v2 kullanıyoruz)
-        let db = JSON.parse(localStorage.getItem('kuafor_v2')) || {
+        // Veritabanı Yapısı (Gider sorunu çözüldü, V3'e geçildi)
+        let db = JSON.parse(localStorage.getItem('kuafor_v3')) || {
             records: [], // { id, type: 'income'|'expense', amount, desc, staff, date, time }
             debts: []    // { id, customer, amount, date, isPaid }
         };
@@ -161,7 +191,6 @@
                 document.getElementById("loginSection").classList.add("hidden");
                 document.getElementById("adminPanel").classList.remove("hidden");
                 
-                // Tarih seçiciyi bugüne ayarla
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById("datePicker").value = today;
                 
@@ -178,7 +207,6 @@
             renderDebts();
         }
 
-        // Tarih Değiştiğinde Çalışacak Fonksiyon
         function handleDateChange() {
             calculateStats();
             renderList();
@@ -186,10 +214,10 @@
 
         // İstatistikleri Hesapla
         function calculateStats() {
-            const selectedDate = document.getElementById("datePicker").value; // Örn: "2023-10-25"
+            const selectedDate = document.getElementById("datePicker").value; 
             if(!selectedDate) return;
 
-            const selectedMonth = selectedDate.substring(0, 7); // Örn: "2023-10"
+            const selectedMonth = selectedDate.substring(0, 7); 
 
             let dailyIncome = 0;
             let dailyExpense = 0;
@@ -198,7 +226,6 @@
             
             let staffIncome = { "Kaan Usta": 0, "Kerem Kalfa": 0, "Taha Kalfa": 0 };
 
-            // İşlem Kayıtlarını Tara
             db.records.forEach(record => {
                 const isSelectedDay = (record.date === selectedDate);
                 const isSelectedMonth = (record.date.startsWith(selectedMonth));
@@ -218,7 +245,6 @@
                 }
             });
 
-            // Ödenmemiş Veresiyeleri Hesapla (Tarihten bağımsız, tüm açık borçlar)
             db.debts.forEach(debt => {
                 if (!debt.isPaid) {
                     totalDebtAmount += debt.amount;
@@ -227,29 +253,27 @@
 
             const dailyProfit = dailyIncome - dailyExpense;
 
-            // Ekrana Yazdır
             document.getElementById("dailyIncome").innerText = dailyIncome + " ₺";
             document.getElementById("dailyExpense").innerText = dailyExpense + " ₺";
             document.getElementById("dailyProfit").innerText = dailyProfit + " ₺";
             document.getElementById("monthlyIncome").innerText = monthlyIncome + " ₺";
             document.getElementById("totalDebt").innerText = totalDebtAmount + " ₺";
 
-            // Personel cirolarını ekrana bas
             const staffListEl = document.getElementById("staffDailyStats");
             staffListEl.innerHTML = `
-                <li class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 shadow-sm">
-                    <span class="font-semibold text-slate-600">Kaan Usta:</span> <b class="text-emerald-600 text-lg">${staffIncome["Kaan Usta"]} ₺</b>
+                <li class="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <span class="text-slate-300">Kaan Usta</span> <b class="text-emerald-400 text-lg">${staffIncome["Kaan Usta"]} ₺</b>
                 </li>
-                <li class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 shadow-sm">
-                    <span class="font-semibold text-slate-600">Kerem Kalfa:</span> <b class="text-emerald-600 text-lg">${staffIncome["Kerem Kalfa"]} ₺</b>
+                <li class="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <span class="text-slate-300">Kerem Kalfa</span> <b class="text-emerald-400 text-lg">${staffIncome["Kerem Kalfa"]} ₺</b>
                 </li>
-                <li class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 shadow-sm">
-                    <span class="font-semibold text-slate-600">Taha Kalfa:</span> <b class="text-emerald-600 text-lg">${staffIncome["Taha Kalfa"]} ₺</b>
+                <li class="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <span class="text-slate-300">Taha Kalfa</span> <b class="text-emerald-400 text-lg">${staffIncome["Taha Kalfa"]} ₺</b>
                 </li>
             `;
         }
 
-        // Günlük Döküm Listesini Çizdir
+        // Listeyi Çizdir
         function renderList() {
             const selectedDate = document.getElementById("datePicker").value;
             const listBody = document.getElementById("dailyListBody");
@@ -258,29 +282,29 @@
             const dayRecords = db.records.filter(r => r.date === selectedDate);
             
             if(dayRecords.length === 0) {
-                listBody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-semibold text-lg">Bu tarihte henüz bir kayıt yok.</td></tr>`;
+                listBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium">Bu tarihte henüz bir kayıt yok.</td></tr>`;
                 return;
             }
 
             dayRecords.forEach(record => {
                 const tr = document.createElement("tr");
-                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition";
+                tr.className = "border-b border-slate-700/50 hover:bg-slate-800/50 transition";
                 
                 let typeBadge = record.type === 'income' 
-                    ? `<span class="bg-emerald-100 text-emerald-700 py-1 px-3 rounded-full text-xs font-black tracking-wider">GELİR</span>`
-                    : `<span class="bg-rose-100 text-rose-700 py-1 px-3 rounded-full text-xs font-black tracking-wider">GİDER</span>`;
+                    ? `<span class="bg-emerald-500/10 text-emerald-400 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wider border border-emerald-500/20">GELİR</span>`
+                    : `<span class="bg-rose-500/10 text-rose-400 py-1.5 px-3 rounded-lg text-xs font-bold tracking-wider border border-rose-500/20">GİDER</span>`;
                 
-                let desc = record.type === 'income' ? `${record.desc} <span class="text-slate-400 text-xs ml-2">(${record.staff})</span>` : record.desc;
-                let amountColor = record.type === 'income' ? 'text-emerald-600' : 'text-rose-600';
+                let desc = record.type === 'income' ? `${record.desc} <span class="text-slate-500 text-xs ml-2">(${record.staff})</span>` : record.desc;
+                let amountColor = record.type === 'income' ? 'text-emerald-400' : 'text-rose-400';
                 let amountSign = record.type === 'income' ? '+' : '-';
 
                 tr.innerHTML = `
-                    <td class="p-4 text-slate-500">${record.time}</td>
-                    <td class="p-4">${typeBadge}</td>
-                    <td class="p-4">${desc}</td>
-                    <td class="p-4 text-right font-black ${amountColor} text-lg">${amountSign}${record.amount} ₺</td>
-                    <td class="p-4 text-center">
-                        <button onclick="deleteRecord(${record.id})" class="text-slate-300 hover:text-rose-500 transition" title="Bu kaydı sil">🗑️</button>
+                    <td class="p-5 text-slate-400">${record.time}</td>
+                    <td class="p-5">${typeBadge}</td>
+                    <td class="p-5">${desc}</td>
+                    <td class="p-5 text-right font-bold ${amountColor} text-lg">${amountSign}${record.amount} ₺</td>
+                    <td class="p-5 text-center">
+                        <button onclick="deleteRecord(${record.id})" class="text-slate-600 hover:text-rose-500 transition hover:scale-110" title="Sil">🗑️</button>
                     </td>
                 `;
                 listBody.appendChild(tr);
@@ -295,21 +319,21 @@
             const unpaidDebts = db.debts.filter(d => !d.isPaid);
 
             if(unpaidDebts.length === 0) {
-                debtList.innerHTML = `<p class="text-slate-400 text-center font-medium mt-4">Şu an açık veresiye kaydı yok. Harika!</p>`;
+                debtList.innerHTML = `<p class="text-slate-500 text-center font-medium mt-6">Şu an açık veresiye yok. Kasa güvende!</p>`;
                 return;
             }
 
             unpaidDebts.forEach(debt => {
                 const li = document.createElement("li");
-                li.className = "flex justify-between items-center p-4 bg-slate-50 border border-slate-200 rounded-xl hover:shadow-md transition";
+                li.className = "flex justify-between items-center p-4 bg-slate-800/50 border border-slate-700 rounded-2xl hover:border-slate-600 transition";
                 li.innerHTML = `
                     <div>
-                        <p class="font-bold text-slate-800 text-lg">${debt.customer}</p>
-                        <p class="text-xs text-slate-400">Tarih: ${debt.date}</p>
+                        <p class="font-bold text-white text-lg">${debt.customer}</p>
+                        <p class="text-xs text-slate-400 mt-1">Tarih: ${debt.date}</p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="font-black text-amber-600 text-xl">${debt.amount} ₺</span>
-                        <button onclick="payDebt(${debt.id})" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-lg font-bold text-sm transition shadow-sm">Tahsil Et</button>
+                        <span class="font-black text-amber-400 text-xl">${debt.amount} ₺</span>
+                        <button onclick="payDebt(${debt.id})" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-xl font-bold text-sm transition">Tahsil Et</button>
                     </div>
                 `;
                 debtList.appendChild(li);
@@ -319,11 +343,12 @@
         // Gelir Ekle
         function addIncome() {
             const staff = document.getElementById("staffSelect").value;
-            const desc = document.getElementById("serviceDesc").value.trim() || "Belirtilmemiş İşlem";
-            const amount = document.getElementById("incomeAmount").value;
+            const desc = document.getElementById("serviceDesc").value.trim() || "Genel İşlem";
+            const amountInput = document.getElementById("incomeAmount").value;
             const selectedDate = document.getElementById("datePicker").value;
+            const amount = parseFloat(amountInput);
 
-            if (!amount || amount <= 0) {
+            if (isNaN(amount) || amount <= 0) {
                 alert("Lütfen geçerli bir tutar girin.");
                 return;
             }
@@ -332,25 +357,29 @@
             db.records.push({
                 id: Date.now(),
                 type: 'income',
-                amount: parseInt(amount),
+                amount: amount,
                 desc: desc,
                 staff: staff,
-                date: selectedDate, // Hangi tarih seçiliyse oraya kaydeder
+                date: selectedDate,
                 time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
             });
 
-            // Formu temizle
             document.getElementById("serviceDesc").value = "";
             document.getElementById("incomeAmount").value = "";
             saveData();
         }
 
-        // Gider Ekle
+        // Gider Ekle (Hata Giderildi)
         function addExpense() {
-            const desc = document.getElementById("datePicker").value;
+            const descInput = document.getElementById("expenseDesc");
+            const amountInput = document.getElementById("expenseAmount");
+            const selectedDate = document.getElementById("datePicker").value;
 
-            if (!desc || !amount || amount <= 0) {
-                alert("Lütfen gider açıklaması ve tutarını doğru girin.");
+            const desc = descInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (!desc || isNaN(amount) || amount <= 0) {
+                alert("Lütfen gider açıklamasını ve tutarını eksiksiz girin.");
                 return;
             }
 
@@ -358,33 +387,34 @@
             db.records.push({
                 id: Date.now(),
                 type: 'expense',
-                amount: parseInt(amount),
+                amount: amount,
                 desc: desc,
-                staff: null,
+                staff: "Kasa/Gider", // Güvenlik için null yerine metin gönderiyoruz
                 date: selectedDate,
                 time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
             });
 
-            document.getElementById("expenseDesc").value = "";
-            document.getElementById("expenseAmount").value = "";
+            descInput.value = "";
+            amountInput.value = "";
             saveData();
         }
 
         // Veresiye Ekle
         function addDebt() {
             const customer = document.getElementById("debtCustomer").value.trim();
-            const amount = document.getElementById("debtAmount").value;
+            const amountInput = document.getElementById("debtAmount").value;
+            const amount = parseFloat(amountInput);
             const today = new Date().toISOString().split('T')[0];
 
-            if (!customer || !amount || amount <= 0) {
-                alert("Lütfen müşteri adını ve borç tutarını doğru girin.");
+            if (!customer || isNaN(amount) || amount <= 0) {
+                alert("Lütfen müşteri adını ve borç tutarını eksiksiz girin.");
                 return;
             }
 
             db.debts.push({
                 id: Date.now(),
                 customer: customer,
-                amount: parseInt(amount),
+                amount: amount,
                 date: today,
                 isPaid: false
             });
@@ -394,17 +424,16 @@
             saveData();
         }
 
-        // Veresiyeyi Tahsil Et (Gelire Dönüştür)
+        // Veresiyeyi Tahsil Et
         function payDebt(id) {
-            const confirmPay = confirm("Bu borç ödendi olarak işaretlenip bugünün kasasına eklenecek. Onaylıyor musun?");
+            const confirmPay = confirm("Bu borç ödendi olarak işaretlenip bugünün kasasına gelir olarak eklenecek. Onaylıyor musun?");
             if(!confirmPay) return;
 
             const debtIndex = db.debts.findIndex(d => d.id === id);
             if (debtIndex > -1) {
                 const debt = db.debts[debtIndex];
-                debt.isPaid = true; // Borcu kapattık
+                debt.isPaid = true; 
 
-                // Bugünün tarihine gelir olarak ekle (Veresiye tahsilatı)
                 const today = new Date().toISOString().split('T')[0];
                 const now = new Date();
 
@@ -413,21 +442,20 @@
                     type: 'income',
                     amount: debt.amount,
                     desc: `Veresiye Tahsilatı (${debt.customer})`,
-                    staff: "Kasa", // Belirli bir ustaya değil, kasaya girer
+                    staff: "Kasa", 
                     date: today,
                     time: now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
                 });
 
-                // Eğer takvimde bugün seçili değilse, kullanıcıya bugüne eklendiğini haber ver.
                 if(document.getElementById("datePicker").value !== today) {
-                    alert("Tahsilat başarıyla 'Bugünün' tarihine gelir olarak eklendi.");
+                    alert("Tahsilat 'Bugünün' tarihine gelir olarak eklendi.");
                 }
                 
                 saveData();
             }
         }
 
-        // Yanlış Girilen Kaydı Silme
+        // Kayıt Sil
         function deleteRecord(id) {
             const confirmDelete = confirm("Bu kaydı silmek istediğinden emin misin?");
             if(confirmDelete) {
@@ -438,21 +466,21 @@
 
         // Veriyi Kaydet ve Ekranı Yenile
         function saveData() {
-            localStorage.setItem('kuafor_v2', JSON.stringify(db));
+            localStorage.setItem('kuafor_v3', JSON.stringify(db));
             calculateStats();
             renderList();
             renderDebts();
         }
 
-        // PDF Çıktısı Alma
+        // PDF Çıktısı (Dark mode için arka plan ayarlandı)
         function exportToPDF() {
             const element = document.getElementById('pdfContent');
             const selectedDate = document.getElementById("datePicker").value;
             const opt = {
                 margin:       [0.5, 0.5],
-                filename:     `Kuafor_Ozet_${selectedDate}.pdf`,
+                filename:     `AconShop_Ozet_${selectedDate}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#f8fafc' },
+                html2canvas:  { scale: 2, backgroundColor: '#0f172a' },
                 jsPDF:        { unit: 'in', format: 'a3', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
