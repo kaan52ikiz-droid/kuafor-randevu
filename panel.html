@@ -488,3 +488,73 @@
     </script>
 </body>
 </html>
+
+<script>
+    // ... (Diğer fonksiyonlar aynı kalacak)
+
+    // GÜNÜ KOPYALA FONKSİYONU
+    function copyDailySummary() {
+        const selectedDate = document.getElementById("datePicker").value;
+        const records = db.records.filter(r => r.date === selectedDate);
+        
+        if (records.length === 0) {
+            alert("Kopyalanacak veri bulunamadı!");
+            return;
+        }
+
+        let summary = `--- ${selectedDate} Günlük Döküm ---\n`;
+        records.forEach(r => {
+            summary += `${r.time} | ${r.type.toUpperCase()} | ${r.desc} | ${r.amount} TL\n`;
+        });
+        
+        const total = document.getElementById("dailyIncome").innerText;
+        summary += `--------------------------\nToplam Gelir: ${total}`;
+
+        navigator.clipboard.writeText(summary).then(() => {
+            alert("Günlük döküm panoya kopyalandı!");
+        });
+    }
+
+    // PDF DÜZENLEME (Sayfa bozulmasını önlemek için sadece tabloyu alıyoruz)
+    function exportToPDF() {
+        // PDF için sadece tabloyu içeren div'i hedefliyoruz
+        const element = document.getElementById('dailyListTableContainer');
+        const selectedDate = document.getElementById("datePicker").value;
+        
+        const opt = {
+            margin:       0.5,
+            filename:     `Gunluk_Dokum_${selectedDate}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+
+<div class="glass-panel p-6 rounded-3xl mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-slate-200 flex items-center gap-3">
+            <span class="bg-slate-700 p-2 rounded-lg">📋</span> Günlük İşlem Dökümü
+        </h2>
+        <div class="flex gap-2">
+            <button onclick="copyDailySummary()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition">📋 Kopyala</button>
+            <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition">📄 PDF İndir</button>
+        </div>
+    </div>
+    
+    <div id="dailyListTableContainer" class="overflow-x-auto rounded-2xl border border-slate-700">
+        <table class="w-full text-left border-collapse bg-slate-900">
+            <thead>
+                <tr class="bg-slate-800 text-slate-400 text-xs uppercase tracking-widest">
+                    <th class="p-5">Saat</th>
+                    <th class="p-5">Tür</th>
+                    <th class="p-5">Açıklama</th>
+                    <th class="p-5 text-right">Tutar</th>
+                </tr>
+            </thead>
+            <tbody id="dailyListBody" class="text-slate-300 font-medium"></tbody>
+        </table>
+    </div>
+</div>
