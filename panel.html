@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dükkan Yönetim Paneli</title>
+    <title>Dükkan Yönetim Paneli - Veresiye Entegreli</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- ÜST BİLGİ ŞERİDİ -->
         <header class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-white tracking-tight">Dükkan Yönetim & Yönetici Paneli</h1>
-                <p class="text-xs text-slate-400 mt-1">Randevular, finansal kayıtlar ve dükkan analizleri tek ekranda.</p>
+                <p class="text-xs text-slate-400 mt-1">Randevular, finansal kayıtlar ve veresiye defteri tek ekranda.</p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2">
                     <label class="text-xs font-semibold text-slate-400 uppercase">Dönem:</label>
                     <input type="month" id="monthFilter" class="bg-transparent text-sm font-bold text-white outline-none cursor-pointer">
                 </div>
-                <!-- ÖZELLİK 5: VERİ YÖNETİMİ VE SIFIRLAMA -->
                 <button onclick="verileriSifirla()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/50 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer">
                     ⚙️ Sistem Sıfırla
                 </button>
             </div>
         </header>
 
-        <!-- FİNANSAL ÖZET KARTLARI (ÖZELLİK 1: GİDER VE NET KÂR DAHİL) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
                 <span class="text-xs font-semibold text-slate-400 uppercase block">Toplam Aylık Gelir</span>
                 <span id="totalIncomeDisplay" class="text-xl font-bold text-emerald-400">0.00 TL</span>
@@ -42,17 +39,18 @@
                 <span class="text-xs font-semibold text-slate-400 uppercase block">Net Kâr / Zarar</span>
                 <span id="netProfitDisplay" class="text-xl font-bold text-blue-400">0.00 TL</span>
             </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow">
+                <span class="text-xs font-semibold text-slate-400 uppercase block">Bekleyen Toplam Alacak</span>
+                <span id="totalReceivableDisplay" class="text-xl font-bold text-amber-400">0.00 TL</span>
+            </div>
         </div>
 
-        <!-- ANA PANEL MATRİSİ -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- SOL KOLON: VERİ GİRİŞ FORMLARI -->
             <div class="space-y-4">
-                <!-- GELİR FORMU -->
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3">💰 Gelir Ekle</h2>
-                    <form id="incomeForm" class="space-y-3">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">💰 Gelir Ekle</h2>
+                    <form id="incomeForm" class="space-y-2">
                         <input type="date" id="incDate" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                         <input type="number" id="incAmount" step="any" required placeholder="Tutar (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                         <select id="incDesc" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
@@ -65,10 +63,9 @@
                     </form>
                 </div>
 
-                <!-- ÖZELLİK 1: GİDER EKLEME MODÜLÜ -->
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-red-400 mb-3">💸 Gider Ekle</h2>
-                    <form id="expenseForm" class="space-y-3">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-red-400 mb-2">💸 Gider Ekle</h2>
+                    <form id="expenseForm" class="space-y-2">
                         <input type="date" id="expDate" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                         <input type="number" id="expAmount" step="any" required placeholder="Tutar (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
                         <input type="text" id="expDesc" required placeholder="Gider Açıklaması (Örn: Kira, Fatura)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
@@ -76,41 +73,47 @@
                     </form>
                 </div>
 
-                <!-- ÖZELLİK 3 & 4: HİZMET ANALİZİ VE DOLULUK ORANI -->
-                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg space-y-4">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">📝 Veresiye / Borç Kaydet</h2>
+                    <form id="debtForm" class="space-y-2">
+                        <input type="text" id="debtName" required placeholder="Müşteri Adı Soyadı" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        <input type="number" id="debtAmount" step="any" required placeholder="Borç Tutarı (TL)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        <input type="text" id="debtDesc" required placeholder="Yapılan İşlem (Örn: Damat Tıraşı)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wide cursor-pointer transition">Deftere Yaz</button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg space-y-3">
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2">📊 Bugünün Doluluk Oranı</h2>
-                        <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-1 block">📊 Bugünün Doluluk Oranı</span>
+                        <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden">
                             <div id="occupancyBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                         <span id="occupancyText" class="text-[10px] text-slate-400 mt-1 block">Koltuklar boştadır.</span>
                     </div>
                     <hr class="border-slate-800">
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">📈 Popüler Hizmet Dağılımı</h2>
-                        <div id="serviceStatsList" class="text-xs space-y-1 text-slate-300">
-                            <!-- JS ile dolacak -->
-                        </div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-1 block">📈 Popüler Hizmet Dağılımı</span>
+                        <div id="serviceStatsList" class="text-xs space-y-1 text-slate-300"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- SAĞ KOLON: KAZANÇ DÖKÜMÜ VE RANDEVU YÖNETİMİ (ÖZELLİK 2) -->
             <div class="lg:col-span-2 space-y-4">
-                <!-- RANDEVU YÖNETİM ALANI -->
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-purple-400 mb-3">📅 Sistemdeki Aktif Randevular</h2>
-                    <div class="overflow-y-auto max-h-[220px] space-y-2 pr-2" id="adminApptList">
-                        <!-- Randevular buraya listelenecek -->
-                    </div>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminApptList"></div>
                 </div>
 
-                <!-- GÜNLÜK HAREKET DÖKÜMÜ -->
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3">📖 Aktif Veresiye / Borç Listesi</h2>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminDebtList">
+                        </div>
+                </div>
+
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">📝 Günlük Finansal Hareket Raporu</h2>
-                    <div class="overflow-y-auto max-h-[250px] space-y-2 pr-2" id="financeLogs">
-                        <!-- Gelir gider logları -->
-                    </div>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="financeLogs"></div>
                 </div>
             </div>
 
@@ -121,19 +124,21 @@
         // Form ve DOM Bağlantıları
         const incomeForm = document.getElementById('incomeForm');
         const expenseForm = document.getElementById('expenseForm');
+        const debtForm = document.getElementById('debtForm'); // Veresiye formu
         const monthFilter = document.getElementById('monthFilter');
         
-        // Hafıza Yüklemeleri
-        let finansDb = JSON.parse(localStorage.getItem('dükkan_finans_db')) || { gelirler: [], giderler: [] };
+        // Veritabanı Modeli (Borçlar dizisi `borclar` olarak db yapısına entegre edildi)
+        let finansDb = JSON.parse(localStorage.getItem('dükkan_finans_db')) || { gelirler: [], giderler: [], borclar: [] };
+        if (!finansDb.borclar) finansDb.borclar = []; // Eski verilerin çökmesini engelleme garantisi
 
-        // Varsayılan Tarih Atamaları
+        // Tarih Sabitleri
         const bugun = new Date();
         const yyyyMm = bugun.getFullYear() + "-" + String(bugun.getMonth() + 1).padStart(2, '0');
         monthFilter.value = yyyyMm;
         document.getElementById('incDate').value = bugun.toISOString().split('T')[0];
         document.getElementById('expDate').value = bugun.toISOString().split('T')[0];
 
-        // GELİR EKLEME TETİKLEYİCİ
+        // GELİR EKLEME
         incomeForm.addEventListener('submit', (e) => {
             e.preventDefault();
             finansDb.gelirler.push({
@@ -146,7 +151,7 @@
             document.getElementById('incAmount').value = '';
         });
 
-        // GIDER EKLEME TETİKLEYİCİ (ÖZELLİK 1)
+        // GİDER EKLEME
         expenseForm.addEventListener('submit', (e) => {
             e.preventDefault();
             finansDb.giderler.push({
@@ -160,6 +165,22 @@
             document.getElementById('expDesc').value = '';
         });
 
+        // ÖZELLİK 1: VERESİYE / BORÇ KAYDETME TETİKLEYİCİSİ
+        debtForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            finansDb.borclar.push({
+                id: Date.now(),
+                tarih: bugun.toISOString().split('T')[0], // Borcun yazıldığı günün tarihi
+                isim: document.getElementById('debtName').value.trim(),
+                tutar: parseFloat(document.getElementById('debtAmount').value),
+                tanim: document.getElementById('debtDesc').value.trim()
+            });
+            veriKaydetVeYenile();
+            document.getElementById('debtName').value = '';
+            document.getElementById('debtAmount').value = '';
+            document.getElementById('debtDesc').value = '';
+        });
+
         monthFilter.addEventListener('change', yenileEkran);
 
         function veriKaydetVeYenile() {
@@ -167,16 +188,18 @@
             yenileEkran();
         }
 
+        // ANA EKRAN GÜNCELLEME MOTORU
         function yenileEkran() {
             const seciliAy = monthFilter.value;
             if(!seciliAy) return;
 
             let toplamGelir = 0;
             let toplamGider = 0;
+            let toplamAlacak = 0;
             let logHTML = '';
             let hizmetSayilari = {};
 
-            // Gelir Hesaplama ve Loglama
+            // Gelir Analizi
             finansDb.gelirler.forEach(g => {
                 if(g.tarih.startsWith(seciliAy)) {
                     toplamGelir += g.tutar;
@@ -188,7 +211,7 @@
                 }
             });
 
-            // Gider Hesaplama ve Loglama
+            // Gider Analizi
             finansDb.giderler.forEach(gi => {
                 if(gi.tarih.startsWith(seciliAy)) {
                     toplamGider += gi.tutar;
@@ -199,9 +222,37 @@
                 }
             });
 
-            // Kart Değerlerini Yazma
+            // ÖZELLİK 1: VERESİYE DEFTERİ LİSTELEME VE HESAPLAMA
+            const debtListContainer = document.getElementById('adminDebtList');
+            debtListContainer.innerHTML = '';
+            
+            finansDb.borclar.forEach(b => {
+                toplamAlacak += b.tutar; // Toplam borç alacağını hesaplar
+                
+                const borckarti = document.createElement('div');
+                borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
+                borckarti.innerHTML = `
+                    <div>
+                        <span class="font-bold text-amber-400">${b.isim}</span> 
+                        <span class="text-slate-400 ml-1">(${b.tanim}) - ${b.tarih.split('-').reverse().join('.')}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-amber-400">${b.tutar.toFixed(2)} TL</span>
+                        <button onclick="veresiyeTahsilEt(${b.id})" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button>
+                    </div>
+                `;
+                debtListContainer.appendChild(borckarti);
+            });
+
+            if(finansDb.borclar.length === 0) {
+                debtListContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-600">Defterde bekleyen borç/veresiye kaydı bulunmuyor.</div>`;
+            }
+
+            // Kart Arayüz Verilerini Yazma
             document.getElementById('totalIncomeDisplay').innerText = toplamGelir.toFixed(2) + " TL";
             document.getElementById('totalExpenseDisplay').innerText = toplamGider.toFixed(2) + " TL";
+            document.getElementById('totalReceivableDisplay').innerText = toplamAlacak.toFixed(2) + " TL";
+            
             const netKar = toplamGelir - toplamGider;
             const netDisplay = document.getElementById('netProfitDisplay');
             netDisplay.innerText = netKar.toFixed(2) + " TL";
@@ -209,10 +260,9 @@
 
             document.getElementById('financeLogs').innerHTML = logHTML || `<div class="text-center py-4 text-xs text-slate-600">Bu döneme ait işlem kaydı yok.</div>`;
 
-            // ÖZELLİK 2: RANDEVULARI LOCALSTORAGE'DAN ÇEKİP YÖNETME
+            // Diğer Sistem Modülleri Tetikleyicileri
             randevuListeleme();
-
-            // ÖZELLİK 3: HİZMET ANALİZİ GÖRÜNÜMÜ
+            
             let statsHTML = '';
             Object.keys(hizmetSayilari).forEach(h => {
                 statsHTML += `<div class="flex justify-between"><span>✂️ ${h}</span><span class="font-bold text-slate-100">${hizmetSayilari[h]} Adet</span></div>`;
@@ -220,7 +270,31 @@
             document.getElementById('serviceStatsList').innerHTML = statsHTML || 'Veri bulunamadı.';
         }
 
-        // ÖZELLİK 2: RANDEVU YÖNETİMİ FONKSİYONU
+        // ÖZELLİK 1: VERESİYE TAHSİLAT MOTORU (Borcu siler, gelire ekler)
+        function veresiyeTahsilEt(id) {
+            const borcIndeks = finansDb.borclar.findIndex(b => b.id === id);
+            if (borcIndeks !== -1) {
+                const borcKaydi = finansDb.borclar[borcIndeks];
+                
+                if(confirm(`${borcKaydi.isim} isimli müşteriden ${borcKaydi.tutar} TL tahsil edildi olarak işaretlensin mi?`)) {
+                    // 1. Gelirler hanesine otomatik olarak nakit girişi yapıyoruz
+                    finansDb.gelirler.push({
+                        id: Date.now(),
+                        tarih: bugun.toISOString().split('T')[0], // Tahsil edildiği günün tarihi
+                        tutar: borcKaydi.tutar,
+                        tanim: `Veresiye Tahsilat (${borcKaydi.isim})`
+                    });
+
+                    // 2. Borç listesinden (kara defterden) kaydı düşüyoruz
+                    finansDb.borclar.splice(borcIndeks, 1);
+
+                    // 3. Hafızayı güncelleyip ekranı yeniliyoruz
+                    veriKaydetVeYenile();
+                }
+            }
+        }
+
+        // RANDEVU LİSTELEME VE DOLULUK
         function randevuListeleme() {
             const listem = document.getElementById('adminApptList');
             listem.innerHTML = '';
@@ -232,7 +306,7 @@
                 const anahtar = localStorage.key(i);
                 if (anahtar.startsWith('appt_')) {
                     sayac++;
-                    const parcalar = anahtar.split('_'); // appt, Tarih, Usta, Saat
+                    const parcalar = anahtar.split('_');
                     const rTarih = parcalar[1];
                     const rBerber = parcalar[2];
                     const rSaat = parcalar[3];
@@ -240,54 +314,27 @@
                     if(rTarih === isoBugun) bugunkuRandevuSayisi++;
 
                     const kart = document.createElement('div');
-                    kart.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
+                    kart.className = "bg-slate-950 border border-slate-800 p-2 rounded-xl flex justify-between items-center text-xs";
                     kart.innerHTML = `
                         <div>
                             <span class="font-bold text-purple-400">[${rSaat}]</span> 
                             <span class="text-slate-300 ml-1">${rTarih.split('-').reverse().join('.')} - ${rBerber}</span>
                         </div>
-                        <button onclick="randevuIptal('${anahtar}')" class="text-[10px] bg-red-900/30 text-red-400 px-2 py-1 rounded hover:bg-red-900/60 cursor-pointer">İptal Et</button>
+                        <button onclick="randevuIptal('${anahtar}')" class="text-[10px] bg-red-900/30 text-red-400 px-2 py-1 rounded hover:bg-red-900/60 cursor-pointer">İptal</button>
                     `;
                     listem.appendChild(kart);
                 }
             }
 
-            if(sayac === 0) {
-                listem.innerHTML = `<div class="text-center py-4 text-xs text-slate-600">Sistemde kayıtlı randevu yok.</div>`;
-            }
+            if(sayac === 0) listem.innerHTML = `<div class="text-center py-2 text-xs text-slate-600">Kayıtlı randevu yok.</div>`;
 
-            // ÖZELLİK 4: DOLULUK ORANI HESAPLAMA (Günlük Maksimum 3 Usta x 26 slot = 78 slot üzerinden)
             const maksSlot = 78;
             const oran = Math.min(Math.round((bugunkuRandevuSayisi / maksSlot) * 100), 100);
             document.getElementById('occupancyBar').style.width = `${oran}%`;
-            document.getElementById('occupancyText').innerText = `Bugün toplam 78 koltuk slotunun ${bugunkuRandevuSayisi} tanesi dolu (%${oran})`;
+            document.getElementById('occupancyText').innerText = `Bugün 78 slottan ${bugunkuRandevuSayisi} tanesi dolu (%${oran})`;
         }
 
-        // RANDEVU İPTALİ
         function randevuIptal(key) {
-            if(confirm("Bu randevu kaydını silmek ve saati boşa çıkarmak istediğinize emin misiniz?")) {
+            if(confirm("Randevuyu silmek istediğinize emin misiniz?")) {
                 localStorage.removeItem(key);
-                yenileEkran();
-            }
-        }
-
-        // ÖZELLİK 5: SİSTEM SIFIRLAMA
-        function verileriSifirla() {
-            if(confirm("DİKKAT! Tüm finansal kayıtları ve randevuları kalıcı olarak sıfırlamak istiyor musunuz? Bu işlem geri alınamaz.")) {
-                localStorage.removeItem('dükkan_finans_db');
-                // Randevu anahtarlarını temizle
-                for (let i = localStorage.length - 1; i >= 0; i--) {
-                    const key = localStorage.key(i);
-                    if(key.startsWith('appt_')) localStorage.removeItem(key);
-                }
-                finansDb = { gelirler: [], giderler: [] };
-                veriKaydetVeYenile();
-            }
-        }
-
-        // Sayfa ilk açılış tetikleyicisi
-        yenileEkran();
-    </script>
-</body>
-                                </html>
-    
+                yenileEkran
