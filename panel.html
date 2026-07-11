@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dükkan Yönetim Paneli - Veresiye Entegreli</title>
+    <title>Dükkan Yönetim Paneli - Kesin Çözüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
@@ -13,7 +13,7 @@
         <header class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-white tracking-tight">Dükkan Yönetim & Yönetici Paneli</h1>
-                <p class="text-xs text-slate-400 mt-1">Randevular, finansal kayıtlar ve veresiye defteri tek ekranda.</p>
+                <p class="text-xs text-slate-400 mt-1">Hatalara karşı korumalı, güvenli finans ve randevu takip sistemi.</p>
             </div>
             <div class="flex items-center gap-3">
                 <div class="bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2">
@@ -21,7 +21,7 @@
                     <input type="month" id="monthFilter" class="bg-transparent text-sm font-bold text-white outline-none cursor-pointer">
                 </div>
                 <button onclick="verileriSifirla()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-900/50 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer">
-                    ⚙️ Sistem Sıfırla
+                    ⚙️ Sistemi Temizle
                 </button>
             </div>
         </header>
@@ -89,7 +89,7 @@
                         <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden">
                             <div id="occupancyBar" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <span id="occupancyText" class="text-[10px] text-slate-400 mt-1 block">Koltuklar boştadır.</span>
+                        <span id="occupancyText" class="text-[10px] text-slate-400 mt-1 block">Yükleniyor...</span>
                     </div>
                     <hr class="border-slate-800">
                     <div>
@@ -107,8 +107,7 @@
 
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3">📖 Aktif Veresiye / Borç Listesi</h2>
-                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminDebtList">
-                        </div>
+                    <div class="overflow-y-auto max-h-[180px] space-y-2 pr-2" id="adminDebtList"></div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
@@ -121,19 +120,33 @@
     </div>
 
     <script>
-        // Form ve DOM Bağlantıları
+        // DOM Bağlantıları
         const incomeForm = document.getElementById('incomeForm');
         const expenseForm = document.getElementById('expenseForm');
-        const debtForm = document.getElementById('debtForm'); // Veresiye formu
+        const debtForm = document.getElementById('debtForm');
         const monthFilter = document.getElementById('monthFilter');
         
-        // Veritabanı Modeli (Borçlar dizisi `borclar` olarak db yapısına entegre edildi)
-        let finansDb = JSON.parse(localStorage.getItem('dükkan_finans_db')) || { gelirler: [], giderler: [], borclar: [] };
-        if (!finansDb.borclar) finansDb.borclar = []; // Eski verilerin çökmesini engelleme garantisi
+        // GÜVENLİ VERİTABANI YÜKLEME MOTORU (Eski bozuk verileri otomatik temizler/iyileştirir)
+        let finansDb = { gelirler: [], giderler: [], borclar: [] };
+        try {
+            const kayıtlıVeri = localStorage.getItem('dükkan_finans_db');
+            if (kayıtlıVeri) {
+                const geçiciDb = JSON.parse(kayıtlıVeri);
+                if (geçiciDb && typeof geçiciDb === 'object') {
+                    if (Array.isArray(geçiciDb.gelirler)) finansDb.gelirler = geçiciDb.gelirler;
+                    if (Array.isArray(geçiciDb.giderler)) finansDb.giderler = geçiciDb.giderler;
+                    if (Array.isArray(geçiciDb.borclar)) finansDb.borclar = geçiciDb.borclar;
+                }
+            }
+        } catch (hata) {
+            console.error("Hatalı veri algılandı, güvenli mod aktif edildi.");
+        }
 
-        // Tarih Sabitleri
+        // TARIH MOTORU (Dönem kutusunun boş kalmasını kesin olarak engeller)
         const bugun = new Date();
         const yyyyMm = bugun.getFullYear() + "-" + String(bugun.getMonth() + 1).padStart(2, '0');
+        
+        // İlk açılışta filtre değerini zorla atıyoruz
         monthFilter.value = yyyyMm;
         document.getElementById('incDate').value = bugun.toISOString().split('T')[0];
         document.getElementById('expDate').value = bugun.toISOString().split('T')[0];
@@ -143,8 +156,8 @@
             e.preventDefault();
             finansDb.gelirler.push({
                 id: Date.now(),
-                tarih: document.getElementById('incDate').value,
-                tutar: parseFloat(document.getElementById('incAmount').value),
+                tarih: document.getElementById('incDate').value || bugun.toISOString().split('T')[0],
+                tutar: parseFloat(document.getElementById('incAmount').value) || 0,
                 tanim: document.getElementById('incDesc').value
             });
             veriKaydetVeYenile();
@@ -156,24 +169,24 @@
             e.preventDefault();
             finansDb.giderler.push({
                 id: Date.now(),
-                tarih: document.getElementById('expDate').value,
-                tutar: parseFloat(document.getElementById('expAmount').value),
-                tanim: document.getElementById('expDesc').value.trim()
+                tarih: document.getElementById('expDate').value || bugun.toISOString().split('T')[0],
+                tutar: parseFloat(document.getElementById('expAmount').value) || 0,
+                tanim: (document.getElementById('expDesc').value || 'Genel Gider').trim()
             });
             veriKaydetVeYenile();
             document.getElementById('expAmount').value = '';
             document.getElementById('expDesc').value = '';
         });
 
-        // ÖZELLİK 1: VERESİYE / BORÇ KAYDETME TETİKLEYİCİSİ
+        // VERESİYE EKLEME
         debtForm.addEventListener('submit', (e) => {
             e.preventDefault();
             finansDb.borclar.push({
                 id: Date.now(),
-                tarih: bugun.toISOString().split('T')[0], // Borcun yazıldığı günün tarihi
-                isim: document.getElementById('debtName').value.trim(),
-                tutar: parseFloat(document.getElementById('debtAmount').value),
-                tanim: document.getElementById('debtDesc').value.trim()
+                tarih: bugun.toISOString().split('T')[0],
+                isim: (document.getElementById('debtName').value || 'İsimsiz Müşteri').trim(),
+                tutar: parseFloat(document.getElementById('debtAmount').value) || 0,
+                tanim: (document.getElementById('debtDesc').value || 'Belirtilmedi').trim()
             });
             veriKaydetVeYenile();
             document.getElementById('debtName').value = '';
@@ -188,67 +201,73 @@
             yenileEkran();
         }
 
-        // ANA EKRAN GÜNCELLEME MOTORU
+        // ANA EKRAN GÜNCELLEME MOTORU (KORUMALI SÜRÜM)
         function yenileEkran() {
+            // Eğer bir şekilde dönem boşalırsa otomatik olarak bugünkü ayı geri ata
+            if(!monthFilter.value) {
+                monthFilter.value = yyyyMm;
+            }
+            
             const seciliAy = monthFilter.value;
-            if(!seciliAy) return;
-
             let toplamGelir = 0;
             let toplamGider = 0;
             let toplamAlacak = 0;
             let logHTML = '';
             let hizmetSayilari = {};
 
-            // Gelir Analizi
+            // Gelir Analizi (Korumalı: g.tarih yoksa veya bozuksa çökmez)
             finansDb.gelirler.forEach(g => {
-                if(g.tarih.startsWith(seciliAy)) {
-                    toplamGelir += g.tutar;
+                if(g && g.tarih && typeof g.tarih === 'string' && g.tarih.startsWith(seciliAy)) {
+                    toplamGelir += (g.tutar || 0);
                     hizmetSayilari[g.tanim] = (hizmetSayilari[g.tanim] || 0) + 1;
                     logHTML += `<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">
                         <span class="text-emerald-400 font-medium">🟢 Gelir: ${g.tanim} (${g.tarih.split('-').reverse().join('.')})</span>
-                        <span class="font-bold text-emerald-400">+${g.tutar.toFixed(2)} TL</span>
+                        <span class="font-bold text-emerald-400">+${(g.tutar || 0).toFixed(2)} TL</span>
                     </div>`;
                 }
             });
 
-            // Gider Analizi
+            // Gider Analizi (Korumalı)
             finansDb.giderler.forEach(gi => {
-                if(gi.tarih.startsWith(seciliAy)) {
-                    toplamGider += gi.tutar;
+                if(gi && gi.tarih && typeof gi.tarih === 'string' && gi.tarih.startsWith(seciliAy)) {
+                    toplamGider += (gi.tutar || 0);
                     logHTML += `<div class="bg-slate-950 border border-slate-850 p-2 rounded-xl flex justify-between text-xs items-center">
                         <span class="text-red-400 font-medium">🔴 Gider: ${gi.tanim} (${gi.tarih.split('-').reverse().join('.')})</span>
-                        <span class="font-bold text-red-400">-${gi.tutar.toFixed(2)} TL</span>
+                        <span class="font-bold text-red-400">-${(gi.tutar || 0).toFixed(2)} TL</span>
                     </div>`;
                 }
             });
 
-            // ÖZELLİK 1: VERESİYE DEFTERİ LİSTELEME VE HESAPLAMA
+            // Veresiye Listeleme (Korumalı)
             const debtListContainer = document.getElementById('adminDebtList');
             debtListContainer.innerHTML = '';
             
             finansDb.borclar.forEach(b => {
-                toplamAlacak += b.tutar; // Toplam borç alacağını hesaplar
-                
-                const borckarti = document.createElement('div');
-                borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
-                borckarti.innerHTML = `
-                    <div>
-                        <span class="font-bold text-amber-400">${b.isim}</span> 
-                        <span class="text-slate-400 ml-1">(${b.tanim}) - ${b.tarih.split('-').reverse().join('.')}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold text-amber-400">${b.tutar.toFixed(2)} TL</span>
-                        <button onclick="veresiyeTahsilEt(${b.id})" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button>
-                    </div>
-                `;
-                debtListContainer.appendChild(borckarti);
+                if (b) {
+                    toplamAlacak += (b.tutar || 0);
+                    const bTarih = b.tarih ? b.tarih.split('-').reverse().join('.') : '../../..';
+                    
+                    const borckarti = document.createElement('div');
+                    borckarti.className = "bg-slate-950 border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs";
+                    borckarti.innerHTML = `
+                        <div>
+                            <span class="font-bold text-amber-400">${b.isim || 'Bilinmeyen'}</span> 
+                            <span class="text-slate-400 ml-1">(${b.tanim || 'Detaysız'}) - ${bTarih}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-amber-400">${(b.tutar || 0).toFixed(2)} TL</span>
+                            <button onclick="veresiyeTahsilEt(${b.id})" class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2 py-1 rounded text-[10px] hover:bg-emerald-900/50 transition cursor-pointer">💵 Tahsil Et</button>
+                        </div>
+                    `;
+                    debtListContainer.appendChild(borckarti);
+                }
             });
 
             if(finansDb.borclar.length === 0) {
                 debtListContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-600">Defterde bekleyen borç/veresiye kaydı bulunmuyor.</div>`;
             }
 
-            // Kart Arayüz Verilerini Yazma
+            // Arayüz Değerlerini Güncelleme
             document.getElementById('totalIncomeDisplay').innerText = toplamGelir.toFixed(2) + " TL";
             document.getElementById('totalExpenseDisplay').innerText = toplamGider.toFixed(2) + " TL";
             document.getElementById('totalReceivableDisplay').innerText = toplamAlacak.toFixed(2) + " TL";
@@ -260,9 +279,10 @@
 
             document.getElementById('financeLogs').innerHTML = logHTML || `<div class="text-center py-4 text-xs text-slate-600">Bu döneme ait işlem kaydı yok.</div>`;
 
-            // Diğer Sistem Modülleri Tetikleyicileri
+            // Randevuları listele
             randevuListeleme();
             
+            // Popüler hizmet istatistikleri
             let statsHTML = '';
             Object.keys(hizmetSayilari).forEach(h => {
                 statsHTML += `<div class="flex justify-between"><span>✂️ ${h}</span><span class="font-bold text-slate-100">${hizmetSayilari[h]} Adet</span></div>`;
@@ -270,31 +290,25 @@
             document.getElementById('serviceStatsList').innerHTML = statsHTML || 'Veri bulunamadı.';
         }
 
-        // ÖZELLİK 1: VERESİYE TAHSİLAT MOTORU (Borcu siler, gelire ekler)
+        // VERESİYE TAHSİLAT MOTORU
         function veresiyeTahsilEt(id) {
-            const borcIndeks = finansDb.borclar.findIndex(b => b.id === id);
+            const borcIndeks = finansDb.borclar.findIndex(b => b && b.id === id);
             if (borcIndeks !== -1) {
                 const borcKaydi = finansDb.borclar[borcIndeks];
-                
-                if(confirm(`${borcKaydi.isim} isimli müşteriden ${borcKaydi.tutar} TL tahsil edildi olarak işaretlensin mi?`)) {
-                    // 1. Gelirler hanesine otomatik olarak nakit girişi yapıyoruz
+                if(confirm(`${borcKaydi.isim} isimli müşteriden ${borcKaydi.tutar} TL tahsil edildi mi?`)) {
                     finansDb.gelirler.push({
                         id: Date.now(),
-                        tarih: bugun.toISOString().split('T')[0], // Tahsil edildiği günün tarihi
+                        tarih: bugun.toISOString().split('T')[0],
                         tutar: borcKaydi.tutar,
                         tanim: `Veresiye Tahsilat (${borcKaydi.isim})`
                     });
-
-                    // 2. Borç listesinden (kara defterden) kaydı düşüyoruz
                     finansDb.borclar.splice(borcIndeks, 1);
-
-                    // 3. Hafızayı güncelleyip ekranı yeniliyoruz
                     veriKaydetVeYenile();
                 }
             }
         }
 
-        // RANDEVU LİSTELEME VE DOLULUK
+        // RANDEVU LİSTELEME MOTORU (Korumalı: Bozuk randevu keylerini filtreleyip atlar)
         function randevuListeleme() {
             const listem = document.getElementById('adminApptList');
             listem.innerHTML = '';
@@ -304,37 +318,21 @@
 
             for (let i = 0; i < localStorage.length; i++) {
                 const anahtar = localStorage.key(i);
-                if (anahtar.startsWith('appt_')) {
-                    sayac++;
+                if (anahtar && anahtar.startsWith('appt_')) {
                     const parcalar = anahtar.split('_');
-                    const rTarih = parcalar[1];
-                    const rBerber = parcalar[2];
-                    const rSaat = parcalar[3];
+                    if (parcalar.length < 4) continue; // Bozuk randevu kaydıysa pas geç, çökme!
+
+                    sayac++;
+                    const rTarih = parcalar[1] || '';
+                    const rBerber = parcalar[2] || 'Bilinmeyen';
+                    const rSaat = parcalar[3] || '--:--';
 
                     if(rTarih === isoBugun) bugunkuRandevuSayisi++;
+
+                    const tGosterim = rTarih.includes('-') ? rTarih.split('-').reverse().join('.') : rTarih;
 
                     const kart = document.createElement('div');
                     kart.className = "bg-slate-950 border border-slate-800 p-2 rounded-xl flex justify-between items-center text-xs";
                     kart.innerHTML = `
                         <div>
-                            <span class="font-bold text-purple-400">[${rSaat}]</span> 
-                            <span class="text-slate-300 ml-1">${rTarih.split('-').reverse().join('.')} - ${rBerber}</span>
-                        </div>
-                        <button onclick="randevuIptal('${anahtar}')" class="text-[10px] bg-red-900/30 text-red-400 px-2 py-1 rounded hover:bg-red-900/60 cursor-pointer">İptal</button>
-                    `;
-                    listem.appendChild(kart);
-                }
-            }
-
-            if(sayac === 0) listem.innerHTML = `<div class="text-center py-2 text-xs text-slate-600">Kayıtlı randevu yok.</div>`;
-
-            const maksSlot = 78;
-            const oran = Math.min(Math.round((bugunkuRandevuSayisi / maksSlot) * 100), 100);
-            document.getElementById('occupancyBar').style.width = `${oran}%`;
-            document.getElementById('occupancyText').innerText = `Bugün 78 slottan ${bugunkuRandevuSayisi} tanesi dolu (%${oran})`;
-        }
-
-        function randevuIptal(key) {
-            if(confirm("Randevuyu silmek istediğinize emin misiniz?")) {
-                localStorage.removeItem(key);
-                yenileEkran
+           
