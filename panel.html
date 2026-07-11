@@ -2,116 +2,111 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dükkan Yönetim Paneli - Profesyonel Sürüm</title>
+    <title>Dükkan Yönetim - Kesin Çözüm</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-white min-h-screen">
 
     <div id="loginOverlay" class="fixed inset-0 bg-slate-950 flex items-center justify-center z-50">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm text-center shadow-2xl">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm text-center">
             <h2 class="text-xl font-bold mb-6">Yönetici Girişi</h2>
-            <input type="password" id="passInput" placeholder="Şifre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center mb-4 text-indigo-400 focus:border-indigo-500 outline-none">
-            <button onclick="kontrolEtVeGirisYap()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold hover:bg-indigo-700">Giriş Yap</button>
+            <input type="password" id="passInput" placeholder="Şifre" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center mb-4 outline-none focus:border-indigo-500">
+            <button onclick="girisKontrol()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold hover:bg-indigo-700">Giriş Yap</button>
             <p id="loginError" class="text-rose-500 text-xs mt-4 hidden">Hatalı Şifre!</p>
         </div>
     </div>
 
-    <div id="mainContent" class="hidden max-w-5xl mx-auto p-4 space-y-6">
-        <div class="flex justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800">
-            <h1 class="font-bold text-lg">Finansal Rapor</h1>
-            <input type="month" id="monthFilter" onchange="guvenliYenile()" class="bg-slate-950 px-3 py-1 rounded text-sm text-indigo-400">
+    <div id="mainContent" class="hidden max-w-lg mx-auto p-4 space-y-4">
+        <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
+            <input type="month" id="monthFilter" onchange="ekraniGuncelle()" class="bg-slate-950 p-2 rounded text-indigo-400 border border-slate-700 outline-none">
+            <button onclick="location.reload()" class="text-xs text-slate-500">Çıkış</button>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900 p-4 rounded-xl border-l-4 border-emerald-500">
-                <p class="text-[10px] text-slate-400">GELİR</p>
-                <p id="totalIncomeDisplay" class="font-bold text-emerald-400">0.00 TL</p>
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-900 p-3 rounded-xl border border-emerald-900 text-center">
+                <p class="text-[9px] text-emerald-500 uppercase">Gelir</p>
+                <p id="dispGelir" class="font-bold text-sm">0.00</p>
             </div>
-            <div class="bg-slate-900 p-4 rounded-xl border-l-4 border-rose-500">
-                <p class="text-[10px] text-slate-400">GİDER</p>
-                <p id="totalExpenseDisplay" class="font-bold text-rose-400">0.00 TL</p>
+            <div class="bg-slate-900 p-3 rounded-xl border border-rose-900 text-center">
+                <p class="text-[9px] text-rose-500 uppercase">Gider</p>
+                <p id="dispGider" class="font-bold text-sm">0.00</p>
             </div>
-            <div class="bg-slate-900 p-4 rounded-xl border-l-4 border-indigo-500">
-                <p class="text-[10px] text-slate-400">NET KÂR</p>
-                <p id="netProfitDisplay" class="font-bold text-indigo-400">0.00 TL</p>
-            </div>
-            <div class="bg-slate-900 p-4 rounded-xl border-l-4 border-amber-500">
-                <p class="text-[10px] text-slate-400">ALACAK</p>
-                <p id="totalReceivableDisplay" class="font-bold text-amber-400">0.00 TL</p>
+            <div class="bg-slate-900 p-3 rounded-xl border border-blue-900 text-center">
+                <p class="text-[9px] text-blue-500 uppercase">Net</p>
+                <p id="dispNet" class="font-bold text-sm">0.00</p>
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-2 gap-6">
-            <div class="bg-slate-900 p-4 rounded-xl space-y-3">
-                <h2 class="text-sm font-bold text-emerald-400">YENİ İŞLEM</h2>
-                <input type="number" id="manualAmount" placeholder="Tutar (TL)" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-sm outline-none">
-                <input type="text" id="manualDesc" placeholder="Açıklama" class="w-full bg-slate-950 border border-slate-700 p-2 rounded text-sm outline-none">
-                <div class="flex gap-2">
-                    <button onclick="islemEkle('gelir')" class="flex-1 bg-emerald-600 py-2 rounded text-xs font-bold">Gelir Ekle</button>
-                    <button onclick="islemEkle('gider')" class="flex-1 bg-rose-600 py-2 rounded text-xs font-bold">Gider Ekle</button>
-                </div>
-            </div>
-            <div class="bg-slate-900 p-4 rounded-xl">
-                <h2 class="text-sm font-bold mb-3">İşlem Geçmişi</h2>
-                <div id="financeLogs" class="space-y-2 text-xs h-40 overflow-y-auto"></div>
+        <div class="bg-slate-900 p-4 rounded-xl space-y-3 border border-slate-800">
+            <input type="number" id="inpTutar" placeholder="Tutar (TL)" class="w-full bg-slate-950 p-2 rounded border border-slate-700 outline-none">
+            <input type="text" id="inpAciklama" placeholder="Açıklama" class="w-full bg-slate-950 p-2 rounded border border-slate-700 outline-none">
+            <div class="flex gap-2">
+                <button onclick="kayitEkle('gelir')" class="w-1/2 bg-emerald-600 py-2 rounded font-bold">Gelir +</button>
+                <button onclick="kayitEkle('gider')" class="w-1/2 bg-rose-600 py-2 rounded font-bold">Gider -</button>
             </div>
         </div>
+
+        <div id="liste" class="space-y-2"></div>
     </div>
 
     <script>
-        var db = { gelirler: [], giderler: [], borclar: [] };
-
-        function kontrolEtVeGirisYap() {
+        // ŞİFRE VE VERİ İŞLEMLERİ
+        function girisKontrol() {
             if (document.getElementById('passInput').value === "5252") {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('hidden');
-                veritabaniYukle();
-                guvenliYenile();
+                document.getElementById('monthFilter').value = new Date().toISOString().slice(0, 7);
+                ekraniGuncelle();
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
             }
         }
 
-        function veritabaniYukle() {
-            var data = localStorage.getItem('dükkan_finans_db');
-            if(data) db = JSON.parse(data);
+        function kayitEkle(tur) {
+            let tutar = parseFloat(document.getElementById('inpTutar').value);
+            let aciklama = document.getElementById('inpTutar').value.trim();
+            let ay = document.getElementById('monthFilter').value;
+
+            if (!tutar || !ay) return alert("Tutar ve Ay seçimi zorunludur.");
+            
+            let kayit = { 
+                id: Date.now(), 
+                tarih: ay, 
+                tutar: tutar, 
+                aciklama: document.getElementById('inpAciklama').value || "İşlem", 
+                tur: tur 
+            };
+
+            let db = JSON.parse(localStorage.getItem('dukkan_db') || '[]');
+            db.push(kayit);
+            localStorage.setItem('dukkan_db', JSON.stringify(db));
+            
+            ekraniGuncelle();
         }
 
-        function islemEkle(tur) {
-            var amt = parseFloat(document.getElementById('manualAmount').value);
-            var desc = document.getElementById('manualDesc').value;
-            if(!amt || !desc) return alert("Hatalı değer girdin!");
+        function ekraniGuncelle() {
+            let ay = document.getElementById('monthFilter').value;
+            let db = JSON.parse(localStorage.getItem('dukkan_db') || '[]');
+            let gelir = 0, gider = 0, html = '';
 
-            var yeniKayit = { id: Date.now(), tarih: new Date().toISOString().split('T')[0], tutar: amt, tanim: desc };
-            if(tur === 'gelir') db.gelirler.push(yeniKayit);
-            else db.giderler.push(yeniKayit);
-
-            localStorage.setItem('dükkan_finans_db', JSON.stringify(db));
-            guvenliYenile();
-        }
-
-        function guvenliYenile() {
-            var ay = document.getElementById('monthFilter').value || new Date().toISOString().slice(0,7);
-            var g = 0, gd = 0;
-            var html = '';
-
-            db.gelirler.forEach(item => {
-                if(item.tarih.startsWith(ay)) {
-                    g += item.tutar;
-                    html += `<div class="flex justify-between p-2 bg-slate-950 border border-slate-800 rounded"><span>${item.tanim}</span><span class="text-emerald-400">+${item.tutar} TL</span></div>`;
-                }
-            });
-            db.giderler.forEach(item => {
-                if(item.tarih.startsWith(ay)) {
-                    gd += item.tutar;
-                    html += `<div class="flex justify-between p-2 bg-slate-950 border border-slate-800 rounded"><span>${item.tanim}</span><span class="text-rose-400">-${item.tutar} TL</span></div>`;
+            db.forEach(item => {
+                if(item.tarih === ay) {
+                    if(item.tur === 'gelir') gelir += item.tutar;
+                    else gider += item.tutar;
+                    
+                    html += `<div class="bg-slate-900 p-2 rounded flex justify-between text-xs border border-slate-800">
+                        <span>${item.aciklama}</span>
+                        <span class="${item.tur === 'gelir' ? 'text-emerald-400' : 'text-rose-400'} font-bold">
+                            ${item.tur === 'gelir' ? '+' : '-'}${item.tutar} TL
+                        </span>
+                    </div>`;
                 }
             });
 
-            document.getElementById('totalIncomeDisplay').innerText = g.toFixed(2) + " TL";
-            document.getElementById('totalExpenseDisplay').innerText = gd.toFixed(2) + " TL";
-            document.getElementById('netProfitDisplay').innerText = (g - gd).toFixed(2) + " TL";
-            document.getElementById('financeLogs').innerHTML = html;
+            document.getElementById('dispGelir').innerText = gelir.toFixed(2);
+            document.getElementById('dispGider').innerText = gider.toFixed(2);
+            document.getElementById('dispNet').innerText = (gelir - gider).toFixed(2);
+            document.getElementById('liste').innerHTML = html;
         }
     </script>
 </body>
