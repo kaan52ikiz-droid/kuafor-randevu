@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siber Kadromuz - VIP RGB Salonu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Canlı RGB Dalgalanma Animasyonu */
+        @keyframes cyberGlow {
+            0% { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
+            33% { border-color: #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+            66% { border-color: #7000ff; box-shadow: 0 0 15px rgba(112, 0, 255, 0.4); }
+            100% { border-color: #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
+        }
+        .rgb-profile-card {
+            animation: cyberGlow 6s infinite linear;
+            border: 2px solid #ff007f;
+            background: rgba(15, 23, 42, 0.95);
+        }
+        .text-glow {
+            background: linear-gradient(to right, #ff007f, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 font-sans selection:bg-cyan-500 selection:text-slate-950">
 
+    <header class="w-full max-w-5xl flex justify-between items-center py-4 border-b border-slate-900 mb-8">
+        <div class="flex items-center gap-2">
+            <span class="text-xl font-black tracking-widest text-glow">VIP SİBER SALON</span>
+        </div>
+        <a href="index.html" class="bg-slate-900 border border-slate-800 hover:border-cyan-500/50 px-4 py-2 rounded-xl text-xs font-bold text-slate-300 transition flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Randevu Ekranına Dön
+        </a>
+    </header>
+
+    <main class="w-full max-w-5xl flex-1 flex flex-col items-center justify-center gap-6">
+        <div class="text-center space-y-2 mb-4">
+            <h1 class="text-4xl font-black tracking-tighter text-glow uppercase">PROFESYONEL STİL MİMARLARI</h1>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">Saç ve sakal tasarımını dijital sanatla birleştiren, ödüllü siber kadromuzla tanışın.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            
+            <div class="rgb-profile-card rounded-3xl p-6 flex flex-col justify-between transform hover:-translate-y-2 transition duration-300 group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
+                            KU
+                        </div>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase animate-pulse">
+                            ● MÜSAİT (Koltuk 1)
+                        </span>
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-bold text-white group-hover:text-cyan-400 transition">Kaan Usta</h2>
+                        <span class="text-[11px] text-purple-400 font-mono tracking-widest uppercase block mt-0.5">Senior Hair Stylist</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 leading-relaxed">12 yıllık premium makas tecrübesiyle, modern İtalyan kesim ve katmanlı saç modellerinde uzmanlaşmış salon lideri.</p>
+
+                    <div class="space-y-2 border-t border-slate-900 pt-3">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Uzmanlık Matrisi</span>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Modern Fade Kesim</span><span>%98</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-cyan-500 h-full w-[98%]"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Makas Teknikleri</span><span>%95</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-pink-500 h-full w-[95%]"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="quickSelectBarber('Kaan Usta')" class="w-full bg-slate-900 hover:bg-gradient-to-r hover:from-pink-600 hover:to-cyan-600 text-white font-bold py-3 rounded-xl border border-slate-800 hover:border-transparent text-xs uppercase tracking-wider transition mt-6 cursor-pointer">
+                    Kaan Usta'dan Sıra Al
+                </button>
+            </div>
+
+            <div class="rgb-profile-card rounded-3xl p-6 flex flex-col justify-between transform hover:-translate-y-2 transition duration-300 group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
+                            KK
+                        </div>
+                        <span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">
+                            ⏳ İŞLEMDE (Koltuk 2)
+                        </span>
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-bold text-white group-hover:text-cyan-400 transition">Kerem Kalfa</h2>
+                        <span class="text-[11px] text-cyan-400 font-mono tracking-widest uppercase block mt-0.5">Color & Fade Specialist</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 leading-relaxed">Saç renklendirme, keratin bakımı ve yeni nesil sokak stili (Street-style fade) tasarımlarında sıra dışı çizgilere sahip kreatif deha.</p>
+
+                    <div class="space-y-2 border-t border-slate-900 pt-3">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Uzmanlık Matrisi</span>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Saç Renklendirme</span><span>%92</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-cyan-500 h-full w-[92%]"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Keratin / Bakım</span><span>%88</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-pink-500 h-full w-[88%]"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="quickSelectBarber('Kerem Kalfa')" class="w-full bg-slate-900 hover:bg-gradient-to-r hover:from-pink-600 hover:to-cyan-600 text-white font-bold py-3 rounded-xl border border-slate-800 hover:border-transparent text-xs uppercase tracking-wider transition mt-6 cursor-pointer">
+                    Kerem Kalfa'dan Sıra Al
+                </button>
+            </div>
+
+            <div class="rgb-profile-card rounded-3xl p-6 flex flex-col justify-between transform hover:-translate-y-2 transition duration-300 group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
+                            TK
+                        </div>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase animate-pulse">
+                            ● MÜSAİT (Koltuk 3)
+                        </span>
+                    </div>
+
+                    <div>
+                        <h2 class="text-xl font-bold text-white group-hover:text-cyan-400 transition">Taha Kalfa</h2>
+                        <span class="text-[11px] text-purple-400 font-mono tracking-widest uppercase block mt-0.5">Beard Design Architect</span>
+                    </div>
+
+                    <p class="text-xs text-slate-400 leading-relaxed">Klasik ustura tıraşı, sakal hattı mimarisi ve buharlı cilt bakımı kombinasyonlarında salonun en yüksek müşteri memnuniyetli ustası.</p>
+
+                    <div class="space-y-2 border-t border-slate-900 pt-3">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Uzmanlık Matrisi</span>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Sakal Hat Tasarımı</span><span>%96</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-cyan-500 h-full w-[96%]"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-0.5 font-mono"><span class="text-slate-300">Cilt Terapi / Bakım</span><span>%90</span></div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden"><div class="bg-pink-500 h-full w-[90%]"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="quickSelectBarber('Taha Kalfa')" class="w-full bg-slate-900 hover:bg-gradient-to-r hover:from-pink-600 hover:to-cyan-600 text-white font-bold py-3 rounded-xl border border-slate-800 hover:border-transparent text-xs uppercase tracking-wider transition mt-6 cursor-pointer">
+                    Taha Kalfa'dan Sıra Al
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full max-w-5xl text-center py-6 text-[11px] text-slate-600 border-t border-slate-900 mt-12 font-mono">
+        © 2026 VIP SİBER SALON OTOMASYONU. TÜM HAKLARI SAKLIDIR.
+    </footer>
+
+    <script>
+        // Ses Efekti Motoru (Web Audio API)
+        function playInterfaceSound(freq, type = 'sine') {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.06);
+            } catch (e) { console.log("Ses aktif edilemedi."); }
+        }
+
+        // Kart hoverlarında ve buton tıklarında kibar arayüz sesleri tetikleme
+        document.querySelectorAll('.rgb-profile-card').forEach(card => {
+            card.addEventListener('mouseenter', () => playInterfaceSound(580));
+        });
+
+        // Akıllı Hızlı Seçim Mekanizması
+        function quickSelectBarber(barberName) {
+            playInterfaceSound(880, 'triangle');
+            // Seçilen berberi tarayıcı hafızasına alıp ana sayfaya yönlendiriyoruz
+            localStorage.setItem('hizli_secilen_berber', barberName);
+            alert(`🚀 ${barberName} seçildi! Randevu formuna yönlendiriliyorsunuz.`);
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+  </html>
+  
